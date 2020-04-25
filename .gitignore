@@ -2,3 +2,5 @@ v16/
 [Bb]in/
 [Oo]bj/
 packages/
+build/
+*.user

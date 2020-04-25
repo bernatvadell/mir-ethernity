@@ -1,9 +1,10 @@
 ﻿#region Using Statements
 using System;
-
+using Microsoft.Extensions.Configuration;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Mir.Client.Models;
 
 #endregion
 
@@ -16,12 +17,14 @@ namespace Mir.Client
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        private AppSettings _appSettings;
 
-        public GameWindow()
+        public GameWindow(AppSettings appsettings)
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             graphics.IsFullScreen = false;
+            _appSettings = appsettings ?? throw new ArgumentNullException(nameof(appsettings));
         }
 
         /// <summary>
@@ -44,9 +47,11 @@ namespace Mir.Client
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
+            NormalFont = Content.Load<SpriteFont>("fonts/normal");
             //TODO: use this.Content to load your game content here 
         }
+
+        public SpriteFont NormalFont { get; set; }
 
         /// <summary>
         /// Allows the game to run logic such as updating the world,
@@ -76,7 +81,13 @@ namespace Mir.Client
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            //TODO: Add your drawing code here
+            
+            spriteBatch.Begin();
+
+            spriteBatch.DrawString(NormalFont, $"Config: " + _appSettings.Content.Path, new Vector2(10, 10), Color.White);
+
+            spriteBatch.End();
+
 
             base.Draw(gameTime);
         }

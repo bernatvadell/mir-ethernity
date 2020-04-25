@@ -8,8 +8,11 @@ using Mir.Ethernity.ImageLibrary.Zircon;
 using Mir.Ethernity.MapLibrary;
 using Mir.Ethernity.MapLibrary.Wemade;
 using System;
-using System.Collections.Generic;
-using System.Text;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.FileExtensions;
+using Microsoft.Extensions.Configuration.Json;
+using System.IO;
+using Mir.Client.Models;
 
 namespace Mir.Client
 {
@@ -47,6 +50,14 @@ namespace Mir.Client
 
         public Game Build()
         {
+            IConfiguration config = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", true, false)
+                .Build();
+
+            var settings = config.Get<AppSettings>();
+
+            _containerBuilder.RegisterInstance(settings);
             _containerBuilder.RegisterType(_textureGeneratorType ?? throw new ServiceNotSpecifiedException(nameof(ITextureGenerator))).As<ITextureGenerator>().SingleInstance();
             _containerBuilder.RegisterType(_imageLibraryType).As<IImageLibrary>().SingleInstance();
             _containerBuilder.RegisterType(_mapReaderType).As<IMapReader>().SingleInstance();
