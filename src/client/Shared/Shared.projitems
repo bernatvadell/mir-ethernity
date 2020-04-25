@@ -16,7 +16,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\BaseScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\GameScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Default\SceneManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\IImageLibrary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\ISceneManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\ITextureGenerator.cs" />
   </ItemGroup>

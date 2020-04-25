@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Mir.Client.Exceptions;
 using Mir.Client.Services;
 using Mir.Client.Services.Default;
+using Mir.Ethernity.ImageLibrary;
 using Mir.Ethernity.ImageLibrary.Zircon;
 using System;
 using System.Collections.Generic;
@@ -42,12 +43,12 @@ namespace Mir.Client
 
         public Game Build()
         {
-            var container = _containerBuilder.Build();
-
             _containerBuilder.RegisterType(_textureGenerator ?? throw new ServiceNotSpecifiedException(nameof(ITextureGenerator))).As<ITextureGenerator>();
             _containerBuilder.RegisterType(_imageLibrary).As<IImageLibrary>();
-
             _containerBuilder.RegisterType<GameWindow>().As<Game>().SingleInstance();
+
+            var container = _containerBuilder.Build();
+
             return container.Resolve<Game>();
         }
 
