@@ -5,6 +5,8 @@ using Mir.Client.Services;
 using Mir.Client.Services.Default;
 using Mir.Ethernity.ImageLibrary;
 using Mir.Ethernity.ImageLibrary.Zircon;
+using Mir.Ethernity.MapLibrary;
+using Mir.Ethernity.MapLibrary.Wemade;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,8 +17,9 @@ namespace Mir.Client
     {
         private ContainerBuilder _containerBuilder;
 
-        private Type _imageLibrary;
-        private Type _textureGenerator;
+        private Type _imageLibraryType;
+        private Type _textureGeneratorType;
+        private Type _mapReaderType;
 
         private GameBuilder()
         {
@@ -26,25 +29,27 @@ namespace Mir.Client
 
         private void SetDefaultServices()
         {
-            _imageLibrary = typeof(ZirconImageLibrary);
+            _imageLibraryType = typeof(ZirconImageLibrary);
+            _mapReaderType = typeof(WemadeMapReader);
         }
 
         public GameBuilder UseImageLibrary<TImageLibrary>() where TImageLibrary : IImageLibrary
         {
-            _imageLibrary = typeof(TImageLibrary);
+            _imageLibraryType = typeof(TImageLibrary);
             return this;
         }
 
         public GameBuilder UseTextureGenerator<TTextureGenerator>() where TTextureGenerator : ITextureGenerator
         {
-            _textureGenerator = typeof(TTextureGenerator);
+            _textureGeneratorType = typeof(TTextureGenerator);
             return this;
         }
 
         public Game Build()
         {
-            _containerBuilder.RegisterType(_textureGenerator ?? throw new ServiceNotSpecifiedException(nameof(ITextureGenerator))).As<ITextureGenerator>();
-            _containerBuilder.RegisterType(_imageLibrary).As<IImageLibrary>();
+            _containerBuilder.RegisterType(_textureGeneratorType ?? throw new ServiceNotSpecifiedException(nameof(ITextureGenerator))).As<ITextureGenerator>().SingleInstance();
+            _containerBuilder.RegisterType(_imageLibraryType).As<IImageLibrary>().SingleInstance();
+            _containerBuilder.RegisterType(_mapReaderType).As<IMapReader>().SingleInstance();
             _containerBuilder.RegisterType<GameWindow>().As<Game>().SingleInstance();
 
             var container = _containerBuilder.Build();
