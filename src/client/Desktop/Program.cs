@@ -13,8 +13,10 @@ namespace Mir.Client
         [STAThread]
         static void Main()
         {
-            using (var game = new GameWindow())
-                game.Run();
+            var game = GameBuilder.Create()
+               .Build();
+
+            using (game) game.Run();
         }
     }
 }

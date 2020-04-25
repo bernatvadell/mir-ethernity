@@ -9,7 +9,13 @@
     <Import_RootNamespace>Mir.Client</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Game1.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\BaseControl.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GameBuilder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GameWindow.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\BaseScene.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\GameScene.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Default\SceneManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\ISceneManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Content\" />
@@ -17,4 +23,4 @@
   <ItemGroup>
     <MonoGameContentReference Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
   </ItemGroup>
- </Project>
+</Project>
