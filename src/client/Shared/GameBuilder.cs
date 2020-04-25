@@ -1,6 +1,9 @@
 ﻿using Autofac;
 using Microsoft.Xna.Framework;
+using Mir.Client.Exceptions;
 using Mir.Client.Services;
+using Mir.Client.Services.Default;
+using Mir.Ethernity.ImageLibrary.Zircon;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,26 +14,47 @@ namespace Mir.Client
     {
         private ContainerBuilder _containerBuilder;
 
+        private Type _imageLibrary;
+        private Type _textureGenerator;
+
         private GameBuilder()
         {
             _containerBuilder = new ContainerBuilder();
-            RegisterDefaultServices();
+            SetDefaultServices();
         }
 
-        private void RegisterDefaultServices()
+        private void SetDefaultServices()
         {
-            _containerBuilder.RegisterType<GameWindow>().As<Game>().SingleInstance();
+            _imageLibrary = typeof(ZirconImageLibrary);
         }
 
-        public static GameBuilder Create()
+        public GameBuilder UseImageLibrary<TImageLibrary>() where TImageLibrary : IImageLibrary
         {
-            return new GameBuilder();
+            _imageLibrary = typeof(TImageLibrary);
+            return this;
+        }
+
+        public GameBuilder UseTextureGenerator<TTextureGenerator>() where TTextureGenerator : ITextureGenerator
+        {
+            _textureGenerator = typeof(TTextureGenerator);
+            return this;
         }
 
         public Game Build()
         {
             var container = _containerBuilder.Build();
+
+            _containerBuilder.RegisterType(_textureGenerator ?? throw new ServiceNotSpecifiedException(nameof(ITextureGenerator))).As<ITextureGenerator>();
+            _containerBuilder.RegisterType(_imageLibrary).As<IImageLibrary>();
+
+            _containerBuilder.RegisterType<GameWindow>().As<Game>().SingleInstance();
             return container.Resolve<Game>();
+        }
+
+
+        public static GameBuilder Create()
+        {
+            return new GameBuilder();
         }
     }
 }

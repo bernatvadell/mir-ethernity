@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mir.Client.Services;
+using System;
 
 namespace Mir.Client
 {
@@ -14,6 +15,7 @@ namespace Mir.Client
         static void Main()
         {
             var game = GameBuilder.Create()
+               .UseTextureGenerator<TextureGenerator>()
                .Build();
 
             using (game) game.Run();

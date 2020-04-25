@@ -10,12 +10,15 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Controls\BaseControl.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Exceptions\ServiceNotSpecifiedException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameWindow.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\BaseScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\GameScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Default\SceneManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\IImageLibrary.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\ISceneManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\ITextureGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Content\" />
