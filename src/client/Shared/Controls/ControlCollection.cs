@@ -10,6 +10,15 @@ namespace Mir.Client.Controls
         {
             private BaseControl _parent;
             private List<BaseControl> _controls;
+            public int Length { get => _controls.Count; }
+
+            public BaseControl this[int index]
+            {
+                get
+                {
+                    return _controls.Count > index ? _controls[index] : null;
+                }
+            }
 
             public ControlCollection(BaseControl parent)
             {
