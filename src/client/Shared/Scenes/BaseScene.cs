@@ -31,13 +31,8 @@ namespace Mir.Client.Scenes
 
         public override void Draw(GameTime gameTime)
         {
-            _graphics.Clear(Color.CornflowerBlue);
-
-            _spriteBatch.Begin();
-
+            _graphics.Clear(Color.Black);
             base.Draw(gameTime);
-
-            _spriteBatch.End();
         }
     }
 }

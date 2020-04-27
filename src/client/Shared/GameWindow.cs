@@ -18,6 +18,8 @@ namespace Mir.Client
             _sceneManager = sceneManager ?? throw new ArgumentNullException(nameof(sceneManager));
             _container = container ?? throw new ArgumentNullException(nameof(container));
             _graphics = _container.Resolve<GraphicsDeviceManager>(new TypedParameter(typeof(Game), this));
+            _graphics.PreferredBackBufferWidth = 1024;
+            _graphics.PreferredBackBufferHeight = 768;
         }
 
         protected override void LoadContent()

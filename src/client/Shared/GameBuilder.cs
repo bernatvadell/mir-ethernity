@@ -56,9 +56,8 @@ namespace Mir.Client
             _containerBuilder.RegisterType(_imageLibraryType).As<IImageLibrary>().SingleInstance();
             _containerBuilder.RegisterType(_mapReaderType).As<IMapReader>().SingleInstance();
 
+            _containerBuilder.RegisterType<DrawerManager>().As<IDrawerManager>().SingleInstance();
             _containerBuilder.RegisterType<SceneManager>().As<ISceneManager>().SingleInstance();
-
-            // _containerBuilder.RegisterType<GameScene>();
 
             _containerBuilder.RegisterAssemblyTypes(assembly)
                 .Where(t => !t.IsAbstract && t.IsSubclassOf(typeof(BaseScene)));
@@ -69,7 +68,7 @@ namespace Mir.Client
             _containerBuilder.RegisterType<GameWindow>().As<Game>().SingleInstance();
             _containerBuilder.Register((component) => component.Resolve<Game>().GraphicsDevice).As<GraphicsDevice>().SingleInstance();
             _containerBuilder.Register((component) => component.Resolve<Game>().Content).As<ContentManager>().SingleInstance();
-            _containerBuilder.Register((component) => new SpriteBatch(component.Resolve<GraphicsDevice>())).As<SpriteBatch>().SingleInstance();
+            _containerBuilder.Register((component) => new SpriteBatch(component.Resolve<GraphicsDevice>())).As<SpriteBatch>().InstancePerDependency();
             
             _containerBuilder.RegisterType<GraphicsDeviceManager>().SingleInstance();
 

@@ -15,9 +15,12 @@
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions\ServiceNotSpecifiedException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameWindow.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\DrawerContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\BaseScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\GameScene.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Default\DrawerManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Default\SceneManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\IDrawerManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\ISceneManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\ITextureGenerator.cs" />
   </ItemGroup>
@@ -26,8 +29,5 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Models\" />
   </ItemGroup>
 </Project>
