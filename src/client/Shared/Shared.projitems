@@ -12,6 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controls\BaseControl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ControlCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\LabelControl.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\ObservableAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions\ServiceNotSpecifiedException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameWindow.cs" />

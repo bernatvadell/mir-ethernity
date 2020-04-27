@@ -68,13 +68,18 @@ namespace Mir.Client
             _containerBuilder.RegisterType<GameWindow>().As<Game>().SingleInstance();
             _containerBuilder.Register((component) => component.Resolve<Game>().GraphicsDevice).As<GraphicsDevice>().SingleInstance();
             _containerBuilder.Register((component) => component.Resolve<Game>().Content).As<ContentManager>().SingleInstance();
+            _containerBuilder.Register((component) => new GraphicsDeviceManager(component.Resolve<Game>())).As<GraphicsDeviceManager>().SingleInstance();
             _containerBuilder.Register((component) => new SpriteBatch(component.Resolve<GraphicsDevice>())).As<SpriteBatch>().InstancePerDependency();
-            
-            _containerBuilder.RegisterType<GraphicsDeviceManager>().SingleInstance();
-
+  
             var container = _containerBuilder.Build();
 
-            return container.Resolve<Game>();
+            var game = container.Resolve<Game>();
+            var device = container.Resolve<GraphicsDeviceManager>();
+            
+            device.PreferredBackBufferWidth = 1024;
+            device.PreferredBackBufferHeight = 768;
+
+            return game;
         }
 
 

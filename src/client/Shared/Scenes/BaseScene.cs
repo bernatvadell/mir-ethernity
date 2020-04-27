@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Mir.Client.Controls;
+using Mir.Client.Services;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,7 +15,7 @@ namespace Mir.Client.Scenes
         private readonly GraphicsDevice _graphics;
         private readonly SpriteBatch _spriteBatch;
 
-        public BaseScene(ILifetimeScope container)
+        public BaseScene(ILifetimeScope container) : base(container.Resolve<IDrawerManager>())
         {
             if (container == null) throw new ArgumentNullException(nameof(container));
             _container = container;
@@ -27,12 +28,6 @@ namespace Mir.Client.Scenes
             var control = _container.Resolve<TControl>();
             Controls.Add(control);
             return control;
-        }
-
-        public override void Draw(GameTime gameTime)
-        {
-            _graphics.Clear(Color.Black);
-            base.Draw(gameTime);
         }
     }
 }

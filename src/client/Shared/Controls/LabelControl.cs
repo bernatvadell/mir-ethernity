@@ -17,19 +17,28 @@ namespace Mir.Client.Controls
         public string Text { get; set; }
         public Color Color { get; set; }
 
-        public LabelControl(ContentManager content, IDrawerManager drawerManager)
+        public LabelControl(ContentManager content, IDrawerManager drawerManager) : base(drawerManager)
         {
             Font = content.Load<SpriteFont>("fonts/normal");
             _drawerManager = drawerManager;
         }
 
-        public override void Draw(GameTime gameTime)
+        protected override bool CheckTextureValid()
+        {
+            return !StateChanged(nameof(Text), nameof(Color), nameof(Font));
+        }
+
+        protected override void DrawTexture()
         {
             using (var ctx = _drawerManager.BuildContext())
             {
                 ctx.SpriteBatch.DrawString(Font, Text, new Vector2(ScreenX, ScreenY), Color);
             }
-            base.Draw(gameTime);
+        }
+
+        protected override Vector2 GetInnerSize()
+        {
+            return Font.MeasureString(Text);
         }
     }
 }
