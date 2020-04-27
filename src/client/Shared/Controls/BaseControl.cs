@@ -21,22 +21,49 @@ namespace Mir.Client.Controls
         protected bool ValidTexture { get; set; }
 
         [Observable]
-        public int ScreenX { get; set; }
+        public int? Left { get; set; }
         [Observable]
-        public int ScreenY { get; set; }
+        public int? Top { get; set; }
         [Observable]
-        public int Width { get; set; }
+        public int? Right { get; set; }
         [Observable]
-        public int Height { get; set; }
+        public int? Bottom { get; set; }
+
         [Observable]
-        public int OuterWidth { get; protected set; }
+        public int? Width { get; set; }
         [Observable]
-        public int OuterHeight { get; protected set; }
+        public int? Height { get; set; }
+        [Observable]
+        public int? PaddingTop { get; set; }
+        [Observable]
+        public int? PaddingBottom { get; set; }
+        [Observable]
+        public int? PaddingLeft { get; set; }
+        [Observable]
+        public int? PaddingRight { get; set; }
+        [Observable]
+        public int? MarginTop { get; set; }
+        [Observable]
+        public int? MarginBottom { get; set; }
+        [Observable]
+        public int? MarginLeft { get; set; }
+        [Observable]
+        public int? MarginRight { get; set; }
+
         [Observable]
         public Color BackgroundColor { get; set; }
 
         public ControlCollection Controls { get; private set; }
         public BaseControl Parent { get; private set; }
+
+        public int InnerWidth { get; private set; }
+        public int OuterWidth { get; private set; }
+
+        public int InnerHeight { get; private set; }
+        public int OuterHeight { get; private set; }
+
+        public int ScreenX { get; private set; }
+        public int ScreenY { get; private set; }
 
         public BaseControl(IDrawerManager drawerManager)
         {
@@ -57,10 +84,17 @@ namespace Mir.Client.Controls
         public void Update(GameTime gameTime)
         {
             UpdateState();
-            UpdateOuterSize();
+
+            UpdateSizes();
+
+            UpdatePositions();
 
             ValidTexture = _renderTarget2D != null
-                && !StateChanged(nameof(Width), nameof(Height), nameof(OuterWidth), nameof(OuterHeight))
+                && !StateChanged(
+                    nameof(Width), nameof(Height),
+                    nameof(PaddingBottom), nameof(PaddingTop), nameof(PaddingLeft), nameof(PaddingRight),
+                    nameof(BackgroundColor)
+                )
                 && CheckTextureValid();
 
             if (!ValidTexture)
@@ -72,11 +106,46 @@ namespace Mir.Client.Controls
                 Controls[i].Update(gameTime);
         }
 
-        public void UpdateOuterSize()
+        public void UpdatePositions()
         {
-            var inner = GetInnerSize();
-            OuterWidth = Width > 0 ? Width : (int)inner.X;
-            OuterHeight = Height > 0 ? Height : (int)inner.Y;
+            var parentScreenX = Parent?.ScreenX ?? 0;
+            var parentScreenY = Parent?.ScreenY ?? 0;
+
+            var parentWidth = Parent?.InnerWidth ?? 1024; // todo: get width from device manager
+            var parentHeight = Parent?.InnerHeight ?? 768; // todo: get height from device manager
+
+            var screenX = 0;
+            var screenY = 0;
+
+            if (Left != null) screenX = parentScreenX + Left.Value + (MarginLeft ?? 0);
+            else if (Right != null) screenX = parentScreenX + parentWidth - Right.Value - (MarginRight ?? 0) - OuterWidth;
+
+            if (Top != null) screenY = parentScreenY + Top.Value + (MarginTop ?? 0);
+            else if (Bottom != null) screenY = parentScreenY + parentHeight - Bottom.Value - (MarginBottom ?? 0) - OuterHeight;
+
+            ScreenX = screenX;
+            ScreenY = screenY;
+        }
+
+        public void UpdateSizes()
+        {
+            var size = GetComponentSize();
+
+            if (size.X <= 0 || size.Y <= 0)
+            {
+                InnerHeight = 0;
+                InnerWidth = 0;
+                OuterHeight = 0;
+                OuterHeight = 0;
+                return;
+            }
+
+            InnerWidth = (int)size.X + (PaddingLeft ?? 0) + (PaddingRight ?? 0);
+            InnerHeight = (int)size.Y + (PaddingTop ?? 0) + (PaddingBottom ?? 0);
+
+            // TODO: pending add border sizes
+            OuterWidth = InnerWidth;
+            OuterHeight = InnerHeight;
         }
 
         public virtual void UpdateState() { }
@@ -110,10 +179,7 @@ namespace Mir.Client.Controls
             }
         }
 
-        protected virtual Vector2 GetInnerSize()
-        {
-            return new Vector2(Width, Height);
-        }
+        protected abstract Vector2 GetComponentSize();
 
         protected bool StateChanged(params string[] props)
         {

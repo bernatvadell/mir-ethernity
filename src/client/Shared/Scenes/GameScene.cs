@@ -15,10 +15,15 @@ namespace Mir.Client.Scenes
         public GameScene(ILifetimeScope container) : base(container)
         {
             _label = CreateControl<LabelControl>();
-            _label.ScreenX = 10;
-            _label.ScreenY = 10;
+            _label.Right = 10;
+            _label.Bottom = 10;
             _label.Color = Color.Red;
             _label.Text = "Write your text here...";
+        }
+
+        protected override Vector2 GetComponentSize()
+        {
+            return new Vector2(1024, 768);
         }
     }
 }

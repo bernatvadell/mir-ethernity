@@ -9,14 +9,11 @@ namespace Mir.Client
     public class GameWindow : Game
     {
         private readonly ISceneManager _sceneManager;
-        private readonly ILifetimeScope _container;
-        private readonly GraphicsDeviceManager _graphics;
 
-        public GameWindow(ISceneManager sceneManager, ILifetimeScope container)
+        public GameWindow(ISceneManager sceneManager)
         {
             Content.RootDirectory = "Content";
             _sceneManager = sceneManager ?? throw new ArgumentNullException(nameof(sceneManager));
-            _container = container ?? throw new ArgumentNullException(nameof(container));
         }
 
         protected override void LoadContent()

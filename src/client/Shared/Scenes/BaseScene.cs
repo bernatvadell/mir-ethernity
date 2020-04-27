@@ -29,5 +29,6 @@ namespace Mir.Client.Scenes
             Controls.Add(control);
             return control;
         }
+
     }
 }

@@ -12,9 +12,11 @@ namespace Mir.Client.Controls
     {
         private readonly IDrawerManager _drawerManager;
 
+        [Observable]
         public SpriteFont Font { get; set; }
-
+        [Observable]
         public string Text { get; set; }
+        [Observable]
         public Color Color { get; set; }
 
         public LabelControl(ContentManager content, IDrawerManager drawerManager) : base(drawerManager)
@@ -36,7 +38,7 @@ namespace Mir.Client.Controls
             }
         }
 
-        protected override Vector2 GetInnerSize()
+        protected override Vector2 GetComponentSize()
         {
             return Font.MeasureString(Text);
         }
