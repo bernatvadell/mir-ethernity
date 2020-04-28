@@ -41,10 +41,5 @@ namespace Mir.Client.Scenes
         }
 
         protected override void DrawTexture() { }
-
-        protected override Vector2 GetComponentSize()
-        {
-            return new Vector2(1024, 768);
-        }
     }
 }

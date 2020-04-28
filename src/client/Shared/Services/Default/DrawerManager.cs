@@ -1,5 +1,7 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Mir.Client.Models;
+using Mir.Ethernity.ImageLibrary;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -8,16 +10,27 @@ namespace Mir.Client.Services.Default
 {
     public class DrawerManager : IDrawerManager
     {
-        public GraphicsDevice Device { get; private set; }
-
+        private readonly GraphicsDevice _device;
+        private readonly GraphicsDeviceManager _graphicsDevice;
         private readonly SpriteBatch _spriteBatch;
+        private readonly ITextureGenerator _textureGenerator;
 
         public Context<SpriteBatch> ActiveContext { get; private set; }
 
-        public DrawerManager(GraphicsDevice device, SpriteBatch spriteBatch)
+        public int Width { get => _graphicsDevice.PreferredBackBufferWidth; }
+        public int Height { get => _graphicsDevice.PreferredBackBufferHeight; }
+
+        public DrawerManager(
+            GraphicsDevice device,
+            GraphicsDeviceManager graphicsDevice,
+            SpriteBatch spriteBatch,
+            ITextureGenerator textureGenerator
+        )
         {
-            Device = device;
+            _device = device;
+            _graphicsDevice = graphicsDevice;
             _spriteBatch = spriteBatch;
+            _textureGenerator = textureGenerator;
         }
 
         public Context<SpriteBatch> PrepareSpriteBatch()
@@ -34,10 +47,21 @@ namespace Mir.Client.Services.Default
             return ActiveContext;
         }
 
+        public void Clear(Color color)
+        {
+            _device.Clear(ClearOptions.Target, color, 0, 0);
+        }
+
         private void DisposeContext(Context<SpriteBatch> context)
         {
             _spriteBatch.End();
             ActiveContext = context.ParentContext;
+        }
+
+        public Texture2D GenerateTexture(IImage image)
+        {
+            var data = image.GetBuffer();
+            return _textureGenerator.Generate(_device, image.Width, image.Height, image.DataType, data);
         }
     }
 }

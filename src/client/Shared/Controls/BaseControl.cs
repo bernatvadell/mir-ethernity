@@ -119,11 +119,11 @@ namespace Mir.Client.Controls
 
                 if (OuterWidth > 0 && OuterHeight > 0)
                 {
-                    _renderTarget2D = new RenderTarget2D(DrawerManager.Device, OuterWidth, OuterHeight, false, SurfaceFormat.Color, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+                    _renderTarget2D = RenderTargetManager.CreateRenderTarget2D(OuterWidth, OuterHeight);
 
                     using (RenderTargetManager.SetRenderTarget2D(_renderTarget2D))
                     {
-                        DrawerManager.Device.Clear(ClearOptions.Target, BackgroundColor, 0, 0);
+                        DrawerManager.Clear(BackgroundColor);
 
                         DrawTexture();
 
@@ -165,7 +165,11 @@ namespace Mir.Client.Controls
             return false;
         }
 
-        protected abstract Vector2 GetComponentSize();
+        protected virtual Vector2 GetComponentSize()
+        {
+            return Parent?.GetComponentSize() ?? new Vector2(DrawerManager.Width, DrawerManager.Height);
+        }
+
         protected abstract void DrawTexture();
         protected abstract bool CheckTextureValid();
         protected virtual void UpdateState() { }

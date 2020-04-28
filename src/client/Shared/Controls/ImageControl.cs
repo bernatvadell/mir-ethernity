@@ -63,8 +63,7 @@ namespace Mir.Client.Controls
 
             using (var ctx = DrawerManager.PrepareSpriteBatch())
             {
-                var data = Image.GetBuffer();
-                var texture = _textureGenerator.Generate(DrawerManager.Device, Image.Width, Image.Height, Image.DataType, data);
+                var texture = DrawerManager.GenerateTexture(Image);
                 ctx.Data.Draw(texture, Vector2.Zero, Color.White);
             }
         }

@@ -8,7 +8,7 @@ namespace Mir.Client.Services
 {
     public interface IRenderTargetManager
     {
-        GraphicsDevice Device { get; }
         Context<RenderTarget2D> SetRenderTarget2D(RenderTarget2D target);
+        RenderTarget2D CreateRenderTarget2D(int width, int height);
     }
 }
