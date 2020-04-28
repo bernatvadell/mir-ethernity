@@ -8,6 +8,6 @@ namespace Mir.Client.Services
     public interface ISceneManager
     {
         BaseScene Active { get; }
-        TScene Load<TScene>() where TScene : BaseScene;
+        void Load<TScene>(bool throwException = true) where TScene : BaseScene;
     }
 }

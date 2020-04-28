@@ -9,6 +9,8 @@ namespace Mir.Client.Services
     public interface IContentAccess
     {
         IDictionary<FontType, SpriteFont> Fonts { get; }
+        Texture2D BlackBackground { get; }
+
         void LoadContent();
     }
 }

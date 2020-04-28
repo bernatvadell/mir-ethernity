@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Mir.Client.Controls.Animators;
 using Mir.Client.Services;
 using System;
 using System.Collections.Concurrent;
@@ -11,17 +12,24 @@ using System.Text;
 
 namespace Mir.Client.Controls
 {
-    public abstract partial class BaseControl
+    public abstract partial class BaseControl : IDisposable
     {
         private IDictionary<string, PropertyInfo> _allProperties;
         private IDictionary<string, object> _previousState;
         private RenderTarget2D _renderTarget2D = null;
+        private List<Animation> _animations = new List<Animation>();
 
         protected IDrawerManager DrawerManager { get; }
         protected IRenderTargetManager RenderTargetManager { get; }
 
         protected bool ValidTexture { get; set; }
 
+        public string Id { get; set; }
+
+        public bool IsDisposed { get; private set; }
+
+        [Observable]
+        public float Opacity { get; set; } = 1f;
         [Observable]
         public int? Left { get; set; }
         [Observable]
@@ -87,19 +95,26 @@ namespace Mir.Client.Controls
         #region Public Methods
         public void Update(GameTime gameTime)
         {
-            UpdateState();
+            for (var i = 0; i < _animations.Count; i++)
+                _animations[i].Process(gameTime);
+
+            UpdateState(gameTime);
 
             UpdateSizes();
 
             UpdatePositions();
 
             ValidTexture = _renderTarget2D != null
-                && !StateChanged(
+                && CheckTextureValid();
+
+            if (StateChanged(
                     nameof(Width), nameof(Height),
                     nameof(PaddingBottom), nameof(PaddingTop), nameof(PaddingLeft), nameof(PaddingRight),
-                    nameof(BackgroundColor)
-                )
-                && CheckTextureValid();
+                    nameof(BackgroundColor), nameof(Opacity)
+                ))
+            {
+                Parent?.InvalidateTexture();
+            }
 
             if (!ValidTexture)
                 InvalidateTexture();
@@ -112,7 +127,7 @@ namespace Mir.Client.Controls
 
         public void Draw(GameTime gameTime)
         {
-            if (!ValidTexture)
+            if (!ValidTexture || _renderTarget2D == null || _renderTarget2D.IsDisposed)
             {
                 _renderTarget2D?.Dispose();
                 _renderTarget2D = null;
@@ -137,9 +152,35 @@ namespace Mir.Client.Controls
 
             if (ValidTexture)
             {
+                var useOpacity = Opacity >= 0 && Opacity < 1;
                 using (var ctx = DrawerManager.PrepareSpriteBatch())
-                    ctx.Data.Draw(_renderTarget2D, new Vector2(ScreenX, ScreenY), Color.White);
+                    ctx.Data.Draw(_renderTarget2D, new Vector2(ScreenX, ScreenY), useOpacity ? Color.White * (float)Opacity : Color.White);
             }
+        }
+
+        public void AddAnimator(Animation animation)
+        {
+            animation.AttachToControl(this);
+            _animations.Add(animation);
+        }
+
+        public void Dispose()
+        {
+            if (IsDisposed) return;
+
+            _renderTarget2D?.Dispose();
+            _allProperties?.Clear();
+            _animations?.Clear();
+            _previousState?.Clear();
+
+            _renderTarget2D = null;
+            _allProperties = null;
+            _animations = null;
+            _previousState = null;
+
+            Controls.Dispose();
+
+            IsDisposed = true;
         }
         #endregion
 
@@ -172,7 +213,7 @@ namespace Mir.Client.Controls
 
         protected abstract void DrawTexture();
         protected abstract bool CheckTextureValid();
-        protected virtual void UpdateState() { }
+        protected virtual void UpdateState(GameTime gameTime) { }
         protected void InvalidateTexture()
         {
             ValidTexture = false;

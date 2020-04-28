@@ -1,6 +1,7 @@
 ﻿using Autofac;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Mir.Client.Exceptions;
 using Mir.Client.Scenes;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace Mir.Client.Services.Default
     public class SceneManager : ISceneManager
     {
         private readonly ILifetimeScope _container;
-        
+
         public BaseScene Active { get; private set; }
 
         public SceneManager(ILifetimeScope container)
@@ -19,8 +20,10 @@ namespace Mir.Client.Services.Default
             _container = container ?? throw new ArgumentNullException(nameof(container));
         }
 
-        public TScene Load<TScene>() where TScene : BaseScene
+        public void Load<TScene>(bool throwException = true) where TScene : BaseScene
         {
+            Active?.Dispose();
+
             var scene = _container.Resolve<TScene>();
             var device = _container.Resolve<GraphicsDeviceManager>();
 
@@ -29,7 +32,8 @@ namespace Mir.Client.Services.Default
             scene.BackgroundColor = Color.Black;
 
             Active = scene;
-            return scene;
+
+            if (throwException) throw new SceneChangedException();
         }
     }
 }

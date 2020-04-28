@@ -13,7 +13,7 @@ namespace Mir.Client.Services
         int Width { get; }
         int Height { get; }
 
-        Context<SpriteBatch> PrepareSpriteBatch();
+        Context<SpriteBatch> PrepareSpriteBatch(BlendState blendState = null);
         void Clear(Color color);
         Texture2D GenerateTexture(IImage image);
     }

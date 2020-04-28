@@ -29,7 +29,7 @@ namespace Mir.Client.Controls
             _contentAccess = contentAccess;
         }
 
-        protected override void UpdateState()
+        protected override void UpdateState(GameTime gameTime)
         {
             if (StateChanged(nameof(FontType)))
                 _font = _contentAccess.Fonts[FontType];

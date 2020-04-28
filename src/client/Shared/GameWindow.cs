@@ -1,7 +1,9 @@
 ﻿using Autofac;
 using Microsoft.Xna.Framework;
+using Mir.Client.Exceptions;
 using Mir.Client.Models;
 using Mir.Client.Scenes;
+using Mir.Client.Scenes.Splash;
 using Mir.Client.Services;
 using System;
 
@@ -16,7 +18,7 @@ namespace Mir.Client
 
         private readonly TimeController _fpsController = new TimeController(TimeSpan.FromSeconds(1));
         private readonly TimeController _upsController = new TimeController(TimeSpan.FromSeconds(1));
-        
+
         private int _fpsCounter = 0;
         private int _upsCounter = 0;
 
@@ -39,12 +41,13 @@ namespace Mir.Client
 
             _contentAccess.LoadContent();
 
+            _sceneManager.Load<SplashScene>(throwException: false);
+
             base.LoadContent();
         }
 
         protected override void Initialize()
         {
-            _sceneManager.Load<GameScene>();
             base.Initialize();
         }
 
@@ -55,7 +58,15 @@ namespace Mir.Client
                 UPS = _upsCounter;
                 _upsCounter = 0;
             }
-            _sceneManager.Active.Update(gameTime);
+            try
+            {
+                _sceneManager.Active.Update(gameTime);
+            }
+            catch (SceneChangedException)
+            {
+                _sceneManager.Active.Update(gameTime);
+            }
+
             base.Update(gameTime);
             _upsCounter++;
         }

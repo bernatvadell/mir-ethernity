@@ -38,6 +38,14 @@ namespace Mir.Client.Controls
                 _controls.Add(control);
                 control.Parent = _parent;
             }
+
+            internal void Dispose()
+            {
+                for (var i = 0; i < _controls.Count; i++)
+                    _controls[i].Dispose();
+                _controls.Clear();
+                _controls = null;
+            }
         }
     }
 }

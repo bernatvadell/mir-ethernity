@@ -15,20 +15,30 @@ namespace Mir.Client.Scenes
         private readonly GraphicsDevice _graphics;
         private readonly SpriteBatch _spriteBatch;
 
+        protected ISceneManager SceneManager { get; private set; }
+
         public BaseScene(ILifetimeScope container) : base(container.Resolve<IDrawerManager>(), container.Resolve<IRenderTargetManager>())
         {
             if (container == null) throw new ArgumentNullException(nameof(container));
             _container = container;
             _graphics = container.Resolve<GraphicsDevice>();
             _spriteBatch = container.Resolve<SpriteBatch>();
+            SceneManager = container.Resolve<ISceneManager>();
         }
 
-        public TControl CreateControl<TControl>() where TControl : BaseControl
+        public TControl CreateControl<TControl>(Action<TControl> configurer = null) where TControl : BaseControl
         {
             var control = _container.Resolve<TControl>();
+            configurer?.Invoke(control);
             Controls.Add(control);
             return control;
         }
 
+        protected override bool CheckTextureValid()
+        {
+            return true;
+        }
+
+        protected override void DrawTexture() { }
     }
 }

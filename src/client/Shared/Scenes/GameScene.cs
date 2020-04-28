@@ -27,12 +27,5 @@ namespace Mir.Client.Scenes
             _label.Color = Color.Red;
             _label.Text = "Write your text here...";
         }
-
-        protected override bool CheckTextureValid()
-        {
-            return true;
-        }
-
-        protected override void DrawTexture() { }
     }
 }

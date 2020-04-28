@@ -33,14 +33,14 @@ namespace Mir.Client.Services.Default
             _textureGenerator = textureGenerator;
         }
 
-        public Context<SpriteBatch> PrepareSpriteBatch()
+        public Context<SpriteBatch> PrepareSpriteBatch(BlendState blendState = null)
         {
             if (ActiveContext != null)
             {
                 _spriteBatch.End();
             }
 
-            _spriteBatch.Begin(sortMode: SpriteSortMode.Texture);
+            _spriteBatch.Begin(blendState: blendState);
 
             ActiveContext = new Context<SpriteBatch>(_spriteBatch, DisposeContext, ActiveContext);
 

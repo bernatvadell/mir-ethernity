@@ -37,7 +37,7 @@ namespace Mir.Client.Controls
             Index = 0;
         }
 
-        protected override void UpdateState()
+        protected override void UpdateState(GameTime gameTime)
         {
             if (StateChanged(nameof(LibraryType)))
             {
@@ -68,6 +68,7 @@ namespace Mir.Client.Controls
 
         protected override Vector2 GetComponentSize()
         {
+            if (Image == null) return Vector2.Zero;
             return new Vector2(Image.Width, Image.Height);
         }
     }
