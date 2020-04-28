@@ -12,7 +12,6 @@ namespace Mir.Client.Controls
     {
 
         private readonly ILibraryResolver _libraryResolver;
-        private readonly ITextureGenerator _textureGenerator;
 
         [Observable]
         public LibraryType LibraryType { get; set; }
@@ -32,7 +31,6 @@ namespace Mir.Client.Controls
         ) : base(drawerManager, renderTargetManager)
         {
             _libraryResolver = libraryResolver ?? throw new ArgumentNullException(nameof(libraryResolver));
-            _textureGenerator = textureGenerator ?? throw new ArgumentNullException(nameof(textureGenerator));
 
             ImageType = ImageType.Image;
             LibraryType = LibraryType.None;

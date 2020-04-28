@@ -65,6 +65,7 @@ namespace Mir.Client
             _containerBuilder.RegisterType(_imageLibraryType).As<IImageLibrary>().SingleInstance();
             _containerBuilder.RegisterType(_mapReaderType).As<IMapReader>().SingleInstance();
 
+            _containerBuilder.RegisterType<ContentAccess>().As<IContentAccess>().SingleInstance();
             _containerBuilder.RegisterType<DrawerManager>().As<IDrawerManager>().SingleInstance();
             _containerBuilder.RegisterType<RenderTargetManager>().As<IRenderTargetManager>().SingleInstance();
             _containerBuilder.RegisterType<SceneManager>().As<ISceneManager>().SingleInstance();
@@ -85,7 +86,10 @@ namespace Mir.Client
             var container = _containerBuilder.Build();
 
             var game = container.Resolve<Game>();
+            game.IsFixedTimeStep = Config.FPSCap;
+            
             var device = container.Resolve<GraphicsDeviceManager>();
+            device.SynchronizeWithVerticalRetrace = false;
 
             device.PreferredBackBufferWidth = 1024;
             device.PreferredBackBufferHeight = 768;

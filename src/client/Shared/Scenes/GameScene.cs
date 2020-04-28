@@ -21,13 +21,6 @@ namespace Mir.Client.Scenes
             _image.LibraryType = Mir.Models.LibraryType.Interface1c;
             _image.Index = 2;
 
-
-            _label = CreateControl<LabelControl>();
-            _label.Left = 10;
-            _label.Top = 10;
-            _label.Color = Color.Red;
-            _label.Text = "Write your text here...";
-
             _label = CreateControl<LabelControl>();
             _label.Right = 10;
             _label.Bottom = 10;

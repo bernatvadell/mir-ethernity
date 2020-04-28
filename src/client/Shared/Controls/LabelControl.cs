@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Mir.Client.Models;
 using Mir.Client.Services;
 using System;
 using System.Collections.Generic;
@@ -10,34 +11,51 @@ namespace Mir.Client.Controls
 {
     public class LabelControl : BaseControl
     {
+        private readonly IContentAccess _contentAccess;
+
+        private SpriteFont _font;
+        private Vector2 _componentSize;
+
+
         [Observable]
-        public SpriteFont Font { get; set; }
+        public FontType FontType { get; set; }
         [Observable]
         public string Text { get; set; }
         [Observable]
         public Color Color { get; set; }
 
-        public LabelControl(ContentManager content, IDrawerManager drawerManager, IRenderTargetManager renderTargetManager) : base(drawerManager, renderTargetManager)
+        public LabelControl(IContentAccess contentAccess, IDrawerManager drawerManager, IRenderTargetManager renderTargetManager) : base(drawerManager, renderTargetManager)
         {
-            Font = content.Load<SpriteFont>("fonts/normal");
+            _contentAccess = contentAccess;
+        }
+
+        protected override void UpdateState()
+        {
+            if (StateChanged(nameof(FontType)))
+                _font = _contentAccess.Fonts[FontType];
+
+            if (StateChanged(nameof(Text), nameof(Color), nameof(FontType)))
+            {
+                _componentSize = _font.MeasureString(Text);
+            }
         }
 
         protected override bool CheckTextureValid()
         {
-            return !StateChanged(nameof(Text), nameof(Color), nameof(Font));
+            return !StateChanged(nameof(Text), nameof(Color), nameof(FontType));
         }
 
         protected override void DrawTexture()
         {
             using (var ctx = DrawerManager.PrepareSpriteBatch())
             {
-                ctx.Data.DrawString(Font, Text, new Vector2(0, 0), Color);
+                ctx.Data.DrawString(_font, Text, new Vector2(0, 0), Color);
             }
         }
 
         protected override Vector2 GetComponentSize()
         {
-            return Font.MeasureString(Text);
+            return _componentSize;
         }
     }
 }
