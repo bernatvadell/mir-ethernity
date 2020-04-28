@@ -17,6 +17,7 @@ namespace Mir.Client
         {
             var game = GameBuilder.Create()
                 .UseTextureGenerator<TextureGenerator>()
+                .UseAssetLoader<AssetLoader>()
                 .Build();
 
             using (game) game.Run();

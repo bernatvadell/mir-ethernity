@@ -15,7 +15,7 @@ namespace Mir.Client.Scenes
         private readonly GraphicsDevice _graphics;
         private readonly SpriteBatch _spriteBatch;
 
-        public BaseScene(ILifetimeScope container) : base(container.Resolve<IDrawerManager>())
+        public BaseScene(ILifetimeScope container) : base(container.Resolve<IDrawerManager>(), container.Resolve<IRenderTargetManager>())
         {
             if (container == null) throw new ArgumentNullException(nameof(container));
             _container = container;

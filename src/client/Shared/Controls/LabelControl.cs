@@ -10,8 +10,6 @@ namespace Mir.Client.Controls
 {
     public class LabelControl : BaseControl
     {
-        private readonly IDrawerManager _drawerManager;
-
         [Observable]
         public SpriteFont Font { get; set; }
         [Observable]
@@ -19,10 +17,9 @@ namespace Mir.Client.Controls
         [Observable]
         public Color Color { get; set; }
 
-        public LabelControl(ContentManager content, IDrawerManager drawerManager) : base(drawerManager)
+        public LabelControl(ContentManager content, IDrawerManager drawerManager, IRenderTargetManager renderTargetManager) : base(drawerManager, renderTargetManager)
         {
             Font = content.Load<SpriteFont>("fonts/normal");
-            _drawerManager = drawerManager;
         }
 
         protected override bool CheckTextureValid()
@@ -32,9 +29,9 @@ namespace Mir.Client.Controls
 
         protected override void DrawTexture()
         {
-            using (var ctx = _drawerManager.BuildContext())
+            using (var ctx = DrawerManager.PrepareSpriteBatch())
             {
-                ctx.SpriteBatch.DrawString(Font, Text, new Vector2(ScreenX, ScreenY), Color);
+                ctx.Data.DrawString(Font, Text, new Vector2(0, 0), Color);
             }
         }
 

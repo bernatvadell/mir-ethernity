@@ -17,7 +17,9 @@ namespace Mir.Client.Controls
         private IDictionary<string, object> _previousState;
         private RenderTarget2D _renderTarget2D = null;
 
-        protected IDrawerManager DrawerManager { get; private set; }
+        protected IDrawerManager DrawerManager { get; }
+        protected IRenderTargetManager RenderTargetManager { get; }
+
         protected bool ValidTexture { get; set; }
 
         [Observable]
@@ -28,7 +30,6 @@ namespace Mir.Client.Controls
         public int? Right { get; set; }
         [Observable]
         public int? Bottom { get; set; }
-
         [Observable]
         public int? Width { get; set; }
         [Observable]
@@ -49,7 +50,6 @@ namespace Mir.Client.Controls
         public int? MarginLeft { get; set; }
         [Observable]
         public int? MarginRight { get; set; }
-
         [Observable]
         public Color BackgroundColor { get; set; }
 
@@ -65,9 +65,12 @@ namespace Mir.Client.Controls
         public int ScreenX { get; private set; }
         public int ScreenY { get; private set; }
 
-        public BaseControl(IDrawerManager drawerManager)
+        public BaseControl(IDrawerManager drawerManager, IRenderTargetManager renderTargetManager)
         {
             DrawerManager = drawerManager;
+            RenderTargetManager = renderTargetManager;
+
+            BackgroundColor = Color.Transparent;
 
             Controls = new ControlCollection(this);
 
@@ -81,6 +84,7 @@ namespace Mir.Client.Controls
             ValidTexture = true;
         }
 
+        #region Public Methods
         public void Update(GameTime gameTime)
         {
             UpdateState();
@@ -106,7 +110,87 @@ namespace Mir.Client.Controls
                 Controls[i].Update(gameTime);
         }
 
-        public void UpdatePositions()
+        public void Draw(GameTime gameTime)
+        {
+            if (!ValidTexture)
+            {
+                _renderTarget2D?.Dispose();
+                _renderTarget2D = null;
+
+                if (OuterWidth > 0 && OuterHeight > 0)
+                {
+                    _renderTarget2D = new RenderTarget2D(DrawerManager.Device, OuterWidth, OuterHeight, false, SurfaceFormat.Color, DepthFormat.None, 0, RenderTargetUsage.PreserveContents);
+
+                    using (RenderTargetManager.SetRenderTarget2D(_renderTarget2D))
+                    {
+                        DrawerManager.Device.Clear(ClearOptions.Target, BackgroundColor, 0, 0);
+
+                        DrawTexture();
+
+                        for (var i = 0; i < Controls.Length; i++)
+                            Controls[i].Draw(gameTime);
+                    }
+
+                    ValidTexture = true;
+                }
+            }
+
+            if (ValidTexture)
+            {
+                using (var ctx = DrawerManager.PrepareSpriteBatch())
+                    ctx.Data.Draw(_renderTarget2D, new Vector2(ScreenX, ScreenY), Color.White);
+            }
+        }
+        #endregion
+
+        #region Protected methods
+        protected bool StateChanged(params string[] props)
+        {
+            if (props.Length == 0)
+                props = _allProperties.Select(x => x.Key).ToArray();
+
+            foreach (var prop in props)
+            {
+                if (!_allProperties.ContainsKey(prop)) throw new ApplicationException($"Property {prop} not exists or not observable");
+                var oldValue = _previousState.ContainsKey(prop) ? _previousState[prop] : null;
+                var newValue = _allProperties[prop].GetValue(this);
+
+                var changed = oldValue == null && newValue != null
+                    || oldValue != null && newValue == null
+                    || (oldValue != null && newValue != null && !oldValue.Equals(newValue));
+
+                if (changed) return true;
+            }
+
+            return false;
+        }
+
+        protected abstract Vector2 GetComponentSize();
+        protected abstract void DrawTexture();
+        protected abstract bool CheckTextureValid();
+        protected virtual void UpdateState() { }
+        protected void InvalidateTexture()
+        {
+            ValidTexture = false;
+            Parent?.InvalidateTexture();
+        }
+
+        #endregion
+
+        #region Private Methods
+        private void UpdateCurrentState()
+        {
+            foreach (var prop in _allProperties)
+            {
+                var value = prop.Value.GetValue(this);
+                if (!_previousState.ContainsKey(prop.Key))
+                    _previousState.Add(prop.Key, value);
+                else
+                    _previousState[prop.Key] = value;
+            }
+        }
+
+        private void UpdatePositions()
         {
             var parentScreenX = Parent?.ScreenX ?? 0;
             var parentScreenY = Parent?.ScreenY ?? 0;
@@ -126,8 +210,7 @@ namespace Mir.Client.Controls
             ScreenX = screenX;
             ScreenY = screenY;
         }
-
-        public void UpdateSizes()
+        private void UpdateSizes()
         {
             var size = GetComponentSize();
 
@@ -147,79 +230,6 @@ namespace Mir.Client.Controls
             OuterWidth = InnerWidth;
             OuterHeight = InnerHeight;
         }
-
-        public virtual void UpdateState() { }
-
-        public void Draw(GameTime gameTime)
-        {
-            if (!ValidTexture)
-            {
-                _renderTarget2D?.Dispose();
-                _renderTarget2D = null;
-
-                if (OuterWidth > 0 && OuterHeight > 0)
-                {
-                    _renderTarget2D = new RenderTarget2D(DrawerManager.Device, OuterWidth, OuterHeight, false, SurfaceFormat.Color, DepthFormat.None);
-
-                    DrawerManager.Device.Clear(ClearOptions.Target, BackgroundColor, 0, 0);
-
-                    DrawTexture();
-
-                    for (var i = 0; i < Controls.Length; i++)
-                        Controls[i].Draw(gameTime);
-
-                    ValidTexture = true;
-                }
-            }
-
-            if (ValidTexture)
-            {
-                using (var ctx = DrawerManager.BuildContext())
-                    ctx.SpriteBatch.Draw(_renderTarget2D, new Vector2(ScreenX, ScreenY), Color.White);
-            }
-        }
-
-        protected abstract Vector2 GetComponentSize();
-
-        protected bool StateChanged(params string[] props)
-        {
-            if (props.Length == 0)
-                props = _allProperties.Select(x => x.Key).ToArray();
-
-            foreach (var prop in props)
-            {
-                if (!_allProperties.ContainsKey(prop)) throw new ApplicationException($"Property {prop} not exists or not observable");
-                var oldValue = _previousState.ContainsKey(prop) ? _previousState[prop] : null;
-                var newValue = _allProperties[prop].GetValue(this);
-                if (oldValue != newValue) return true;
-            }
-
-            return false;
-        }
-
-        protected virtual void DrawTexture() { }
-
-        protected virtual bool CheckTextureValid()
-        {
-            return true;
-        }
-
-        protected void InvalidateTexture()
-        {
-            ValidTexture = false;
-            Parent?.InvalidateTexture();
-        }
-
-        private void UpdateCurrentState()
-        {
-            foreach (var prop in _allProperties)
-            {
-                var value = prop.Value.GetValue(this);
-                if (!_previousState.ContainsKey(prop.Key))
-                    _previousState.Add(prop.Key, value);
-                else
-                    _previousState[prop.Key] = value;
-            }
-        }
+        #endregion
     }
 }

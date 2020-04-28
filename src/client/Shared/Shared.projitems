@@ -11,17 +11,23 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Controls\BaseControl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ControlCollection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\ImageControl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\LabelControl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ObservableAttribute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions\ServiceNotSpecifiedException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameWindow.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Models\DrawerContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\Context.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\BaseScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\GameScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Default\DrawerManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Default\LibraryResolver.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\Default\RenderTargetManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Default\SceneManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\IAssetLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\IDrawerManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\ILibraryResolver.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Services\IRenderTargetManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\ISceneManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\ITextureGenerator.cs" />
   </ItemGroup>

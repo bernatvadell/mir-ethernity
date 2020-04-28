@@ -12,7 +12,7 @@ namespace Mir.Client.Services.Default
 
         private readonly SpriteBatch _spriteBatch;
 
-        public DrawerContext ActiveContext { get; private set; }
+        public Context<SpriteBatch> ActiveContext { get; private set; }
 
         public DrawerManager(GraphicsDevice device, SpriteBatch spriteBatch)
         {
@@ -20,7 +20,7 @@ namespace Mir.Client.Services.Default
             _spriteBatch = spriteBatch;
         }
 
-        public DrawerContext BuildContext()
+        public Context<SpriteBatch> PrepareSpriteBatch()
         {
             if (ActiveContext != null)
             {
@@ -29,12 +29,12 @@ namespace Mir.Client.Services.Default
 
             _spriteBatch.Begin(sortMode: SpriteSortMode.Texture);
 
-            ActiveContext = new DrawerContext(_spriteBatch, DisposeContext, ActiveContext);
+            ActiveContext = new Context<SpriteBatch>(_spriteBatch, DisposeContext, ActiveContext);
 
             return ActiveContext;
         }
 
-        private void DisposeContext(DrawerContext context)
+        private void DisposeContext(Context<SpriteBatch> context)
         {
             _spriteBatch.End();
             ActiveContext = context.ParentContext;

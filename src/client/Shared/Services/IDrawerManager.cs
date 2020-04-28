@@ -9,6 +9,6 @@ namespace Mir.Client.Services
     public interface IDrawerManager
     {
         GraphicsDevice Device { get; }
-        DrawerContext BuildContext();
+        Context<SpriteBatch> PrepareSpriteBatch();
     }
 }

@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Windows", "Windows\Windows.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Desktop", "Desktop\Desktop.csproj", "{316BCD5F-1374-4715-A519-93D9C0E9A772}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models", "Models\Models.csproj", "{E86D5155-9734-4B09-B2CB-03C04569B4B6}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Shared\Shared.projitems*{316bcd5f-1374-4715-a519-93d9c0e9a772}*SharedItemsImports = 4
@@ -36,6 +38,14 @@ Global
 		{316BCD5F-1374-4715-A519-93D9C0E9A772}.Release|Any CPU.Build.0 = Release|Any CPU
 		{316BCD5F-1374-4715-A519-93D9C0E9A772}.Release|x86.ActiveCfg = Release|Any CPU
 		{316BCD5F-1374-4715-A519-93D9C0E9A772}.Release|x86.Build.0 = Release|Any CPU
+		{E86D5155-9734-4B09-B2CB-03C04569B4B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E86D5155-9734-4B09-B2CB-03C04569B4B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E86D5155-9734-4B09-B2CB-03C04569B4B6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E86D5155-9734-4B09-B2CB-03C04569B4B6}.Debug|x86.Build.0 = Debug|Any CPU
+		{E86D5155-9734-4B09-B2CB-03C04569B4B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E86D5155-9734-4B09-B2CB-03C04569B4B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E86D5155-9734-4B09-B2CB-03C04569B4B6}.Release|x86.ActiveCfg = Release|Any CPU
+		{E86D5155-9734-4B09-B2CB-03C04569B4B6}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
