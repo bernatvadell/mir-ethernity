@@ -9,6 +9,8 @@ namespace Mir.Packets
         Ping = 0,
         Pong = 1,
         
-        ClientPacket = 2
+        ClientPacket = 2,
+        Disconnect = 3,
+        ClientConnectionChanged = 4
     }
 }

@@ -40,8 +40,7 @@ namespace Mir.Packets
 
         public static Packet Deserialize(byte[] bufferIn, out byte[] bufferExtra, PacketSource source)
         {
-            // we need more data for process it...
-            if (bufferIn.Length < 8)
+            if (bufferIn.Length == 0)
             {
                 bufferExtra = bufferIn;
                 return null;
@@ -49,6 +48,13 @@ namespace Mir.Packets
 
             if (bufferIn[0] != '#')
                 throw new WrongPacketException();
+
+            // we need more data for process it...
+            if (bufferIn.Length < 8)
+            {
+                bufferExtra = bufferIn;
+                return null;
+            }
 
             var length = BitConverter.ToUInt32(bufferIn, 1);
 

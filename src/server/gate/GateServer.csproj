@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\common\NetworkServer\Network.csproj" />
     <ProjectReference Include="..\..\common\packets\Packets.csproj" />
   </ItemGroup>
 

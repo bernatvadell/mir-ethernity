@@ -3,56 +3,38 @@ using DotNetEnv;
 using Microsoft.Extensions.Logging;
 using Mir.GameServer.Exceptions;
 using Mir.GameServer.Services;
+using Mir.Network.TCP;
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Mir.GameServer
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            MainAsync().GetAwaiter().GetResult();
-        }
-
-        static async Task MainAsync()
-        {
-            Env.Load();
-
-            var loggerFactory = LoggerFactory.Create((configure) =>
-            {
-                configure
-                    .SetMinimumLevel(Enum.Parse<LogLevel>(Env.GetString("LOG_LEVEL", "Debug")))
-                    .AddConsole();
-            });
-
-            var builder = new ContainerBuilder();
-
-            builder.RegisterInstance(loggerFactory).As<ILoggerFactory>().SingleInstance();
-
-            builder.RegisterGeneric(typeof(Logger<>))
-                .As(typeof(ILogger<>))
-                .SingleInstance();
-
-            builder.RegisterType<Services.TCP.Connection>().InstancePerDependency();
-            builder.RegisterType<Services.TCP.Listener>().As<IListener>().SingleInstance();
-
-            var container = builder.Build();
-
-            var logger = container.Resolve<ILogger<Program>>();
-            var listener = container.Resolve<IListener>();
-
             try
             {
-                logger.LogInformation("Starting GameServer");
+                Env.Load();
 
-                await listener.Listen();
+                var container = IoCBuilder.BuildContainer();
+                var service = container.Resolve<IService>();
+                var logger = container.Resolve<ILogger<Program>>();
+                var cts = new CancellationTokenSource();
 
-                logger.LogInformation("Stopped GameServer");
+                Console.CancelKeyPress += (s, e) =>
+                {
+                    logger.LogInformation("Signal cancel received, wait to end service...");
+                    cts.Cancel();
+                };
+
+                await service.Run(cts.Token);
+                logger.LogInformation("Server stopped successfully");
             }
-            catch (BadConfigValueException ex)
+            catch (TaskCanceledException)
             {
-                logger.LogError(ex, "Bad format config");
+                Environment.Exit(0);
             }
         }
     }

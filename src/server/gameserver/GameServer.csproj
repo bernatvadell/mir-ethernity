@@ -15,6 +15,10 @@
   </ItemGroup>
   
   <ItemGroup>
+    <ProjectReference Include="..\..\common\NetworkServer\Network.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
     <None Update=".env">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

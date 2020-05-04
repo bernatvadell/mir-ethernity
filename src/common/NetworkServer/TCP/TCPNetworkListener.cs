@@ -1,61 +1,53 @@
 ﻿using Autofac;
-using EasyTcp.Server;
+using DotNetEnv;
 using Microsoft.Extensions.Logging;
-using Mir.GateServer.Exceptions;
+using Mir.Packets;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Mir.GateServer.Services.TCP
+namespace Mir.Network.TCP
 {
-    public class Listener : IListener
+    public class TCPNetworkListener : IListener
     {
         private Socket _listenerSocket;
         private readonly SemaphoreSlim _waiterConnection = new SemaphoreSlim(0);
-        private readonly IPAddress _ipAddress;
-        private readonly ushort _port;
 
         private ILifetimeScope _container;
-        private ILogger<Listener> _logger;
+        private ILogger<TCPNetworkListener> _logger;
+        private TCPNetworkListenerOptions _options;
+        private ConcurrentDictionary<IntPtr, TCPConnection> _connections;
 
-        private ConcurrentDictionary<IntPtr, Connection> _connections;
+        public event EventHandler<IConnection> OnClientConnect;
+        public event EventHandler<IConnection> OnClientDisconnect;
+        public event EventHandler<Message> OnClientData;
+
+        public IEnumerable<IConnection> Connections => _connections.Values.Cast<IConnection>();
 
         public bool Listening { get; private set; }
 
-        public Listener(ILifetimeScope container)
+        public TCPNetworkListener(ILifetimeScope container, ILogger<TCPNetworkListener> logger, TCPNetworkListenerOptions options)
         {
             _container = container ?? throw new ArgumentNullException(nameof(container));
-            _logger = container.Resolve<ILogger<Listener>>();
-
-            var tcpIP = DotNetEnv.Env.GetString("GATE_IP", "0.0.0.0");
-            var tcpPORT = DotNetEnv.Env.GetString("GATE_PORT", "7000");
-
-            if (!IPAddress.TryParse(tcpIP, out IPAddress address))
-                throw new BadConfigValueException("GATE_IP", tcpIP, "IP");
-
-            if (!ushort.TryParse(tcpPORT, out ushort port) || port == 0 || port > ushort.MaxValue)
-                throw new BadConfigValueException("GATE_PORT", tcpIP, $"Port number between 1-{ushort.MaxValue}");
-
-            _ipAddress = address;
-            _port = port;
-
-            _connections = new ConcurrentDictionary<IntPtr, Connection>();
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _options = options ?? throw new ArgumentNullException(nameof(options));
+            _connections = new ConcurrentDictionary<IntPtr, TCPConnection>();
         }
 
         public async Task Listen(CancellationToken cancellationToken = default)
         {
             if (Listening) return;
 
-            _listenerSocket = new Socket(_ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            _listenerSocket = new Socket(_options.ListenIP.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
             try
             {
-                _listenerSocket.Bind(new IPEndPoint(_ipAddress, _port));
+                _listenerSocket.Bind(new IPEndPoint(_options.ListenIP, _options.ListenPort));
                 _listenerSocket.Listen(100);
             }
             catch (Exception ex)
@@ -67,7 +59,7 @@ namespace Mir.GateServer.Services.TCP
 
             Listening = true;
 
-            _logger.LogInformation($"Network started: {_ipAddress}:{_port}");
+            _logger.LogInformation($"Network started: {_options.ListenIP}:{_options.ListenPort}");
 
             while (Listening && !cancellationToken.IsCancellationRequested)
             {
@@ -89,20 +81,21 @@ namespace Mir.GateServer.Services.TCP
             _logger.LogInformation($"Network stopped");
         }
 
-        private async void AcceptCallback(IAsyncResult ar)
+        private void AcceptCallback(IAsyncResult ar)
         {
             CancellationToken cancellationToken = (CancellationToken)ar.AsyncState;
             _waiterConnection.Release();
             Socket handler = _listenerSocket.EndAccept(ar);
 
             _logger.LogDebug($"Client connected - Handle: " + handler.Handle);
-            var connection = _container.Resolve<Connection>(new TypedParameter(typeof(Socket), handler));
+            var connection = _container.Resolve<TCPConnection>(new TypedParameter(typeof(Socket), handler));
             _connections.TryAdd(handler.Handle, connection);
 
-            await connection.Initialize(cancellationToken);
+            connection.OnReceivePacket += (s, e) => OnClientData?.Invoke(this, new Message((IConnection)s, e));
+            connection.OnDisconnect += (s, e) => OnClientDisconnect?.Invoke(this, (IConnection)s);
 
-            _logger.LogDebug($"Client disconencted - Handle: " + handler.Handle);
+            OnClientConnect?.Invoke(this, connection);
+            connection.StartListenData(cancellationToken, _options.Source, true);
         }
-
     }
 }

@@ -1,7 +1,6 @@
 ﻿using Autofac;
 using DotNetEnv;
 using Microsoft.Extensions.Logging;
-using Mir.GateServer.Exceptions;
 using Mir.GateServer.Services;
 using System;
 using System.Threading;
@@ -28,15 +27,8 @@ namespace Mir.GateServer
                     cts.Cancel();
                 };
 
-                try
-                {
-                    await service.Run(cts.Token);
-                    logger.LogInformation("Server stopped successfully");
-                }
-                catch (BadConfigValueException ex)
-                {
-                    logger.LogError(ex, "Bad format config");
-                }
+                await service.Run(cts.Token);
+                logger.LogInformation("Server stopped successfully");
             }
             catch (TaskCanceledException)
             {
