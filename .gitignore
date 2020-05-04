@@ -4,3 +4,4 @@ v16/
 packages/
 build/
 *.user
+.vs/
