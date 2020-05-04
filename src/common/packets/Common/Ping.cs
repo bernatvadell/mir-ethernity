@@ -7,5 +7,8 @@ namespace Mir.Packets.Common
 {
     [Packet(PacketSource.Common, PacketIndex.Ping)]
     [ProtoContract]
-    public class Ping : Packet { }
+    public class Ping : Packet
+    {
+        public static Ping Default = new Ping();
+    }
 }

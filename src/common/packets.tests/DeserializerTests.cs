@@ -16,6 +16,7 @@ namespace Packets.Tests
             var buffer = new byte[] { 35, 0, 0, 0, 0, 0, 0, 33 };
             var packet = PacketSerializer.Deserialize(buffer, out byte[] bufferExtra, PacketSource.Client);
             Assert.IsType<Ping>(packet);
+            Assert.Empty(bufferExtra);
         }
 
         [Fact]
@@ -24,6 +25,7 @@ namespace Packets.Tests
             var buffer = new byte[] { 35, 0, 0, 0, 0, 1, 0, 33 };
             var packet = PacketSerializer.Deserialize(buffer, out byte[] bufferExtra, PacketSource.Client);
             Assert.IsType<Pong>(packet);
+            Assert.Empty(bufferExtra);
         }
 
         [Fact]
@@ -35,6 +37,7 @@ namespace Packets.Tests
             var npacket = (ClientPacket)packet;
             Assert.Equal(new byte[] { 1, 2, 3, 4, 5 }, npacket.Packet);
             Assert.Equal(100, npacket.SocketHandle);
+            Assert.Empty(bufferExtra);
         }
     }
 }
