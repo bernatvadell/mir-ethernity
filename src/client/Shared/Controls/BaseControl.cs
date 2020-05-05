@@ -1,10 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using Mir.Client.Controls.Animators;
+using Mir.Client.Models;
 using Mir.Client.Services;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -12,9 +15,15 @@ using System.Text;
 
 namespace Mir.Client.Controls
 {
-    public abstract partial class BaseControl : IDisposable
+
+    public abstract class BaseControl : IDisposable
     {
+        public static BaseControl HoverControl { get; private set; }
+        public static BaseControl FocusControl { get; private set; }
+
         private IDictionary<string, PropertyInfo> _allProperties;
+        private IDictionary<string, FieldInfo> _allFields;
+
         private IDictionary<string, object> _previousState;
         private RenderTarget2D _renderTarget2D = null;
         private List<Animation> _animations = new List<Animation>();
@@ -23,9 +32,10 @@ namespace Mir.Client.Controls
         protected IRenderTargetManager RenderTargetManager { get; }
 
         protected bool ValidTexture { get; set; }
+        protected bool Drawable { get; set; }
 
+        public bool IsControl { get; set; } = false;
         public string Id { get; set; }
-
         public bool IsDisposed { get; private set; }
 
         [Observable]
@@ -61,8 +71,15 @@ namespace Mir.Client.Controls
         [Observable]
         public Color BackgroundColor { get; set; }
 
+        [Observable]
+        public bool Hovered { get; private set; }
+        [Observable]
+        public bool Touching { get; private set; }
+        [Observable]
+        public bool Focused { get => this == FocusControl; }
+
         public ControlCollection Controls { get; private set; }
-        public BaseControl Parent { get; private set; }
+        public BaseControl Parent { get; internal set; }
 
         public int InnerWidth { get; private set; }
         public int OuterWidth { get; private set; }
@@ -72,6 +89,15 @@ namespace Mir.Client.Controls
 
         public int ScreenX { get; private set; }
         public int ScreenY { get; private set; }
+
+        public Rectangle DisplayArea { get; private set; }
+
+        public event EventHandler<TouchEventArgs> GotHover;
+        public event EventHandler LostHover;
+        public event EventHandler<TouchEventArgs> Touch;
+
+        public event EventHandler GotFocus;
+        public event EventHandler LostFocus;
 
         public BaseControl(IDrawerManager drawerManager, IRenderTargetManager renderTargetManager)
         {
@@ -85,7 +111,12 @@ namespace Mir.Client.Controls
             _previousState = new Dictionary<string, object>();
 
             _allProperties = GetType()
-                .GetProperties()
+                .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                .Where(x => x.GetCustomAttribute<ObservableAttribute>() != null)
+                .ToDictionary(x => x.Name, x => x);
+
+            _allFields = GetType()
+                .GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
                 .Where(x => x.GetCustomAttribute<ObservableAttribute>() != null)
                 .ToDictionary(x => x.Name, x => x);
 
@@ -93,6 +124,14 @@ namespace Mir.Client.Controls
         }
 
         #region Public Methods
+        public void Focus()
+        {
+            if (!IsControl) return;
+            FocusControl?.OnLostFocus();
+            FocusControl = this;
+            GotFocus?.Invoke(this, EventArgs.Empty);
+        }
+
         public void Update(GameTime gameTime)
         {
             for (var i = 0; i < _animations.Count; i++)
@@ -140,7 +179,10 @@ namespace Mir.Client.Controls
                     {
                         DrawerManager.Clear(BackgroundColor);
 
-                        DrawTexture();
+                        if (Drawable)
+                        {
+                            DrawTexture();
+                        }
 
                         for (var i = 0; i < Controls.Length; i++)
                             Controls[i].Draw(gameTime);
@@ -153,8 +195,11 @@ namespace Mir.Client.Controls
             if (ValidTexture)
             {
                 var useOpacity = Opacity >= 0 && Opacity < 1;
+
                 using (var ctx = DrawerManager.PrepareSpriteBatch())
-                    ctx.Data.Draw(_renderTarget2D, new Vector2(ScreenX, ScreenY), useOpacity ? Color.White * (float)Opacity : Color.White);
+                {
+                    ctx.Instance.Draw(_renderTarget2D, new Vector2(ScreenX, ScreenY), useOpacity ? Color.White * (float)Opacity : Color.White);
+                }
             }
         }
 
@@ -182,6 +227,60 @@ namespace Mir.Client.Controls
 
             IsDisposed = true;
         }
+
+        public virtual bool OnTextInput(Keys key, char character)
+        {
+            return false;
+        }
+
+        public virtual bool OnKeyDown(KeyEventArgs args)
+        {
+            var flag = false;
+
+            for (var i = Controls.Length - 1; i >= 0 && !flag; i--)
+                flag = Controls[i].OnKeyDown(args);
+
+            return flag;
+        }
+        public virtual bool OnKeyUp(KeyEventArgs args)
+        {
+            var flag = false;
+
+            for (var i = Controls.Length - 1; i >= 0 && !flag; i--)
+                flag = Controls[i].OnKeyUp(args);
+
+            return flag;
+        }
+
+        public void OnTouched(Point touchPoint)
+        {
+            Touching = false;
+            Touch?.Invoke(this, new TouchEventArgs { Target = this, Point = touchPoint });
+        }
+
+        public void OnTouchStart(Point touchPoint)
+        {
+            Touching = true;
+        }
+        public void OnTouchMoving(Point touchPoint)
+        {
+            // TODO: Implements Movable control
+        }
+
+        public void OnLostHover()
+        {
+            if (HoverControl != this) return;
+            HoverControl = null;
+            LostHover?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void OnGotHover(Point touchPoint)
+        {
+            HoverControl?.OnLostHover();
+            HoverControl = this;
+            GotHover?.Invoke(this, new TouchEventArgs { Target = this, Point = touchPoint });
+        }
+
         #endregion
 
         #region Protected methods
@@ -192,9 +291,16 @@ namespace Mir.Client.Controls
 
             foreach (var prop in props)
             {
-                if (!_allProperties.ContainsKey(prop)) throw new ApplicationException($"Property {prop} not exists or not observable");
+                if (!_allProperties.ContainsKey(prop) && !_allFields.ContainsKey(prop))
+                    throw new ApplicationException($"Property {prop} not exists or not observable");
+
                 var oldValue = _previousState.ContainsKey(prop) ? _previousState[prop] : null;
-                var newValue = _allProperties[prop].GetValue(this);
+                object newValue = null;
+
+                if (_allProperties.ContainsKey(prop))
+                    newValue = _allProperties[prop].GetValue(this);
+                else
+                    newValue = _allFields[prop].GetValue(this);
 
                 var changed = oldValue == null && newValue != null
                     || oldValue != null && newValue == null
@@ -211,8 +317,8 @@ namespace Mir.Client.Controls
             return Parent?.GetComponentSize() ?? new Vector2(DrawerManager.Width, DrawerManager.Height);
         }
 
-        protected abstract void DrawTexture();
-        protected abstract bool CheckTextureValid();
+        protected virtual void DrawTexture() { }
+        protected virtual bool CheckTextureValid() { return false; }
         protected virtual void UpdateState(GameTime gameTime) { }
         protected void InvalidateTexture()
         {
@@ -246,18 +352,23 @@ namespace Mir.Client.Controls
             var screenX = 0;
             var screenY = 0;
 
-            if (Left != null) screenX = parentScreenX + Left.Value + (MarginLeft ?? 0);
-            else if (Right != null) screenX = parentScreenX + parentWidth - Right.Value - (MarginRight ?? 0) - OuterWidth;
+            if (Left != null) screenX = Left.Value + (MarginLeft ?? 0);
+            else if (Right != null) screenX = parentWidth - Right.Value - (MarginRight ?? 0) - OuterWidth;
 
-            if (Top != null) screenY = parentScreenY + Top.Value + (MarginTop ?? 0);
-            else if (Bottom != null) screenY = parentScreenY + parentHeight - Bottom.Value - (MarginBottom ?? 0) - OuterHeight;
+            if (Top != null) screenY = Top.Value + (MarginTop ?? 0);
+            else if (Bottom != null) screenY = parentHeight - Bottom.Value - (MarginBottom ?? 0) - OuterHeight;
 
             ScreenX = screenX;
             ScreenY = screenY;
+
+            DisplayArea = new Rectangle(parentScreenX + ScreenX, parentScreenY + ScreenY, OuterWidth, OuterHeight);
         }
         private void UpdateSizes()
         {
             var size = GetComponentSize();
+
+            if (Width != null) size.X = Width.Value;
+            if (Height != null) size.Y = Height.Value;
 
             if (size.X <= 0 || size.Y <= 0)
             {
@@ -274,6 +385,18 @@ namespace Mir.Client.Controls
             // TODO: pending add border sizes
             OuterWidth = InnerWidth;
             OuterHeight = InnerHeight;
+        }
+
+        private void UpdateTouchState()
+        {
+
+        }
+
+        private void OnLostFocus()
+        {
+            if (FocusControl != this) return;
+            LostFocus?.Invoke(this, EventArgs.Empty);
+            FocusControl = null;
         }
         #endregion
     }

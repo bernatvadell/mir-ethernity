@@ -26,11 +26,11 @@ namespace Mir.Client.Scenes
             SceneManager = container.Resolve<ISceneManager>();
         }
 
-        public TControl CreateControl<TControl>(Action<TControl> configurer = null) where TControl : BaseControl
+        public TControl CreateControl<TControl>(Action<TControl> configurer = null, BaseControl parent = null) where TControl : BaseControl
         {
             var control = _container.Resolve<TControl>();
             configurer?.Invoke(control);
-            Controls.Add(control);
+            (parent?.Controls ?? Controls).Add(control);
             return control;
         }
 

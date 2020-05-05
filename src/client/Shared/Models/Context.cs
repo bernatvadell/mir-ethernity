@@ -10,11 +10,11 @@ namespace Mir.Client.Models
         private readonly Action<Context<TDataType>> _disposeCallback;
 
         public Context<TDataType> ParentContext { get; private set; }
-        public TDataType Data { get; private set; }
+        public TDataType Instance { get; private set; }
 
-        internal Context(TDataType data, Action<Context<TDataType>> disposeCallack, Context<TDataType> parentContext = default)
+        internal Context(TDataType instance, Action<Context<TDataType>> disposeCallack, Context<TDataType> parentContext = default)
         {
-            Data = data;
+            Instance = instance;
             ParentContext = parentContext;
             _disposeCallback = disposeCallack;
         }

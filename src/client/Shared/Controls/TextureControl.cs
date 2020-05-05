@@ -15,6 +15,7 @@ namespace Mir.Client.Controls
 
         public TextureControl(IDrawerManager drawerManager, IRenderTargetManager renderTargetManager) : base(drawerManager, renderTargetManager)
         {
+            Drawable = true;
         }
 
         protected override bool CheckTextureValid()
@@ -28,7 +29,7 @@ namespace Mir.Client.Controls
 
             using (var ctx = DrawerManager.PrepareSpriteBatch())
             {
-                ctx.Data.Draw(Texture, Vector2.Zero, Color.White);
+                ctx.Instance.Draw(Texture, Vector2.Zero, Color.White);
             }
         }
 

@@ -31,7 +31,8 @@ namespace Mir.Client.Controls
         ) : base(drawerManager, renderTargetManager)
         {
             _libraryResolver = libraryResolver ?? throw new ArgumentNullException(nameof(libraryResolver));
-
+            
+            Drawable = true;
             ImageType = ImageType.Image;
             LibraryType = LibraryType.None;
             Index = 0;
@@ -62,7 +63,7 @@ namespace Mir.Client.Controls
             using (var ctx = DrawerManager.PrepareSpriteBatch())
             {
                 var texture = DrawerManager.GenerateTexture(Image);
-                ctx.Data.Draw(texture, Vector2.Zero, Color.White);
+                ctx.Instance.Draw(texture, Vector2.Zero, Color.White);
             }
         }
 

@@ -1,9 +1,10 @@
-﻿using Mir.Client.Services;
+﻿using Mir.Client.Controls;
+using Mir.Client.Services;
+using Mir.Client.Services.Default;
 using System;
 
 namespace Mir.Client
 {
-#if WINDOWS || LINUX
     /// <summary>
     /// The main class.
     /// </summary>
@@ -18,10 +19,16 @@ namespace Mir.Client
             var game = GameBuilder.Create()
                 .UseTextureGenerator<TextureGenerator>()
                 .UseAssetLoader<AssetLoader>()
+                .UseContext<WindowsGameContext>()
+                .UseGamePadService<MouseGamePadService>()
+                .UseGamePadService<KeyboardGamePadService>()
                 .Build();
 
-            using (game) game.Run();
+            using (game)
+            {
+                game.Run();
+            }
         }
+
     }
-#endif
 }

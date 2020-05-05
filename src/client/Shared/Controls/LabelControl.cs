@@ -27,6 +27,8 @@ namespace Mir.Client.Controls
         public LabelControl(IContentAccess contentAccess, IDrawerManager drawerManager, IRenderTargetManager renderTargetManager) : base(drawerManager, renderTargetManager)
         {
             _contentAccess = contentAccess;
+            Drawable = true;
+            Text = string.Empty;
         }
 
         protected override void UpdateState(GameTime gameTime)
@@ -49,7 +51,7 @@ namespace Mir.Client.Controls
         {
             using (var ctx = DrawerManager.PrepareSpriteBatch())
             {
-                ctx.Data.DrawString(_font, Text, new Vector2(0, 0), Color);
+                ctx.Instance.DrawString(_font, Text, new Vector2(0, 0), Color);
             }
         }
 

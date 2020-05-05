@@ -17,6 +17,16 @@ namespace Mir.Client.Models
             _nextTick = TimeSpan.Zero;
         }
 
+        public void Reset(TimeSpan elapse)
+        {
+            _elapse = elapse;
+            _nextTick = TimeSpan.Zero;
+        }
+
+        public void Reset()
+        {
+            _nextTick = TimeSpan.Zero;
+        }
 
         public bool CheckProcess(GameTime gameTime)
         {

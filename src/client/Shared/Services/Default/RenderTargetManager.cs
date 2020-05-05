@@ -28,7 +28,7 @@ namespace Mir.Client.Services.Default
 
         private void DisposeContext(Context<RenderTarget2D> context)
         {
-            _device.SetRenderTarget(context.ParentContext?.Data);
+            _device.SetRenderTarget(context.ParentContext?.Instance);
             ActiveContext = context.ParentContext;
         }
 
@@ -41,7 +41,7 @@ namespace Mir.Client.Services.Default
                 false,
                 SurfaceFormat.Color,
                 DepthFormat.None,
-                0,
+                1,
                 RenderTargetUsage.PreserveContents
             );
         }

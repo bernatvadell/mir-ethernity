@@ -63,5 +63,11 @@ namespace Mir.Client.Services.Default
             var data = image.GetBuffer();
             return _textureGenerator.Generate(_device, image.Width, image.Height, image.DataType, data);
         }
+
+        public Point GetResizedPoint(Point point)
+        {
+            // TODO: Pending implement scaling window
+            return point;
+        }
     }
 }

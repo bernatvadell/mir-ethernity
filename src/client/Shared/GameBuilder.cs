@@ -12,6 +12,7 @@ using Mir.Ethernity.ImageLibrary.Zircon;
 using Mir.Ethernity.MapLibrary;
 using Mir.Ethernity.MapLibrary.Wemade;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Mir.Client
@@ -24,6 +25,9 @@ namespace Mir.Client
         private Type _textureGeneratorType;
         private Type _mapReaderType;
         private Type _assetLoaderType;
+        private Dictionary<Type, Type> _overridedControls = new Dictionary<Type, Type>();
+        private Type _gameContext;
+        private List<Type> _gamePadServices = new List<Type>();
 
         private GameBuilder()
         {
@@ -37,9 +41,27 @@ namespace Mir.Client
             _mapReaderType = typeof(WemadeMapReader);
         }
 
+        public GameBuilder OverrideControl<TOriginal, TOverride>() where TOriginal : BaseControl where TOverride : TOriginal
+        {
+            _overridedControls.Add(typeof(TOriginal), typeof(TOverride));
+            return this;
+        }
+
         public GameBuilder UseAssetLoader<TAssetLoader>() where TAssetLoader : IAssetLoader
         {
             _assetLoaderType = typeof(TAssetLoader);
+            return this;
+        }
+
+        public GameBuilder UseGamePadService<TGamePadService>() where TGamePadService : IGamePadService
+        {
+            _gamePadServices.Add(typeof(TGamePadService));
+            return this;
+        }
+
+        public GameBuilder UseContext<TGameContext>() where TGameContext : GameContext
+        {
+            _gameContext = typeof(TGameContext);
             return this;
         }
 
@@ -61,6 +83,7 @@ namespace Mir.Client
 
             _containerBuilder.RegisterType(_textureGeneratorType ?? throw new ServiceNotSpecifiedException(nameof(ITextureGenerator))).As<ITextureGenerator>().SingleInstance();
             _containerBuilder.RegisterType(_assetLoaderType ?? throw new ServiceNotSpecifiedException(nameof(IAssetLoader))).As<IAssetLoader>().SingleInstance();
+            _containerBuilder.RegisterType(_gameContext ?? throw new ServiceNotSpecifiedException(nameof(GameContext))).As<Game>().SingleInstance();
 
             _containerBuilder.RegisterType(_imageLibraryType).As<IImageLibrary>().SingleInstance();
             _containerBuilder.RegisterType(_mapReaderType).As<IMapReader>().SingleInstance();
@@ -77,7 +100,13 @@ namespace Mir.Client
             _containerBuilder.RegisterAssemblyTypes(assembly)
                 .Where(t => !t.IsAbstract && t.IsSubclassOf(typeof(BaseControl)));
 
-            _containerBuilder.RegisterType<GameWindow>().As<Game>().SingleInstance();
+            foreach (var gps in _gamePadServices)
+                _containerBuilder.RegisterType(gps).As<IGamePadService>().SingleInstance();
+
+            foreach (var control in _overridedControls)
+                _containerBuilder.RegisterType(control.Value).As(control.Key);
+
+            _containerBuilder.Register((component) => component.Resolve<Game>().Window).As<GameWindow>().SingleInstance();
             _containerBuilder.Register((component) => component.Resolve<Game>().GraphicsDevice).As<GraphicsDevice>().SingleInstance();
             _containerBuilder.Register((component) => component.Resolve<Game>().Content).As<ContentManager>().SingleInstance();
             _containerBuilder.Register((component) => new GraphicsDeviceManager(component.Resolve<Game>())).As<GraphicsDeviceManager>().SingleInstance();
@@ -87,7 +116,7 @@ namespace Mir.Client
 
             var game = container.Resolve<Game>();
             game.IsFixedTimeStep = Config.FPSCap;
-            
+
             var device = container.Resolve<GraphicsDeviceManager>();
             device.SynchronizeWithVerticalRetrace = false;
 

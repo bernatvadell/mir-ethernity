@@ -1,4 +1,5 @@
 ﻿using Mir.Client.Services;
+using Mir.Client.Services.Default;
 using System;
 
 namespace Mir.Client
@@ -17,6 +18,8 @@ namespace Mir.Client
             var game = GameBuilder.Create()
                .UseTextureGenerator<TextureGenerator>()
                .UseAssetLoader<AssetLoader>()
+               .UseGamePadService<MouseGamePadService>()
+               .UseGamePadService<KeyboardGamePadService>()
                .Build();
 
             using (game) game.Run();

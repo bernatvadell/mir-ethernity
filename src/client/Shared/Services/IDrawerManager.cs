@@ -16,5 +16,6 @@ namespace Mir.Client.Services
         Context<SpriteBatch> PrepareSpriteBatch(BlendState blendState = null);
         void Clear(Color color);
         Texture2D GenerateTexture(IImage image);
+        Point GetResizedPoint(Point point);
     }
 }
