@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Autofac;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Mir.Client.Models;
@@ -24,9 +25,9 @@ namespace Mir.Client.Controls
         [Observable]
         public Color Color { get; set; }
 
-        public LabelControl(IContentAccess contentAccess, IDrawerManager drawerManager, IRenderTargetManager renderTargetManager) : base(drawerManager, renderTargetManager)
+        public LabelControl(ILifetimeScope scope) : base(scope)
         {
-            _contentAccess = contentAccess;
+            _contentAccess = scope.Resolve<IContentAccess>();
             Drawable = true;
             Text = string.Empty;
         }

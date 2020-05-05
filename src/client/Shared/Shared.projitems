@@ -32,6 +32,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\BaseScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\GameScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Login\LoginScene.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Login\Views\IntroBackground.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Login\Views\LoginBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Splash\SplashScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Default\ContentAccess.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Default\DrawerManager.cs" />

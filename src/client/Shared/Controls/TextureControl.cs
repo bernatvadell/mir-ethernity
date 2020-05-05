@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Autofac;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Mir.Client.Controls.Animators;
 using Mir.Client.Services;
@@ -13,7 +14,7 @@ namespace Mir.Client.Controls
         [Observable]
         public Texture2D Texture { get; set; }
 
-        public TextureControl(IDrawerManager drawerManager, IRenderTargetManager renderTargetManager) : base(drawerManager, renderTargetManager)
+        public TextureControl(ILifetimeScope scope) : base(scope)
         {
             Drawable = true;
         }

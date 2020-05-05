@@ -18,7 +18,7 @@ namespace Mir.Client.Scenes
             _image = CreateControl<ImageControl>();
             _image.Left = 10;
             _image.Bottom = 10;
-            _image.LibraryType = Mir.Models.LibraryType.Interface1c;
+            _image.Library = Mir.Models.LibraryType.Interface1c;
             _image.Index = 2;
 
             _label = CreateControl<LabelControl>();

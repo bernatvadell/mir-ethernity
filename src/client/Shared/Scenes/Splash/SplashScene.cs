@@ -14,7 +14,7 @@ namespace Mir.Client.Scenes.Splash
 {
     public class SplashScene : BaseScene
     {
-        private TimeController _splashTimeController = new TimeController(TimeSpan.FromSeconds(2));
+        private TimeController _splashTimeController = new TimeController(TimeSpan.FromSeconds(3));
 
         public SplashScene(ILifetimeScope container, IContentAccess contentAccess) : base(container)
         {
@@ -23,7 +23,7 @@ namespace Mir.Client.Scenes.Splash
             CreateControl<ImageControl>((control) =>
             {
                 control.Id = "BackgroundImage";
-                control.LibraryType = LibraryType.Interface1c;
+                control.Library = LibraryType.Interface1c;
                 control.Index = 6;
                 control.Width = DrawerManager.Width;
                 control.Height = DrawerManager.Height;
@@ -36,7 +36,7 @@ namespace Mir.Client.Scenes.Splash
                 control.Height = DrawerManager.Height;
                 control.Opacity = 0;
                 control.Texture = contentAccess.BlackBackground;
-                control.AddAnimator(new PropertyAnimation((c, v) => c.Opacity = v, 0, 1, 0.01f, TimeSpan.FromMilliseconds(2000)));
+                control.AddAnimator(new PropertyAnimation((c, v) => c.Opacity = v, 0, 1, 0.01f, TimeSpan.FromSeconds(2)));
             });
         }
 

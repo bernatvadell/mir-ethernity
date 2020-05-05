@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Autofac;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Mir.Client.Controls.Animators;
@@ -27,6 +28,7 @@ namespace Mir.Client.Controls
         private IDictionary<string, object> _previousState;
         private RenderTarget2D _renderTarget2D = null;
         private List<Animation> _animations = new List<Animation>();
+        private ILifetimeScope _scope;
 
         protected IDrawerManager DrawerManager { get; }
         protected IRenderTargetManager RenderTargetManager { get; }
@@ -49,25 +51,20 @@ namespace Mir.Client.Controls
         [Observable]
         public int? Bottom { get; set; }
         [Observable]
+        public bool HorizontalCenter { get; set; }
+        [Observable]
+        public bool VerticalCenter { get; set; }
+        [Observable]
         public int? Width { get; set; }
         [Observable]
         public int? Height { get; set; }
         [Observable]
-        public int? PaddingTop { get; set; }
+        public bool UseBlend { get; set; }
         [Observable]
-        public int? PaddingBottom { get; set; }
+        public int? OffsetX { get; set; }
         [Observable]
-        public int? PaddingLeft { get; set; }
-        [Observable]
-        public int? PaddingRight { get; set; }
-        [Observable]
-        public int? MarginTop { get; set; }
-        [Observable]
-        public int? MarginBottom { get; set; }
-        [Observable]
-        public int? MarginLeft { get; set; }
-        [Observable]
-        public int? MarginRight { get; set; }
+        public int? OffsetY { get; set; }
+
         [Observable]
         public Color BackgroundColor { get; set; }
 
@@ -81,10 +78,7 @@ namespace Mir.Client.Controls
         public ControlCollection Controls { get; private set; }
         public BaseControl Parent { get; internal set; }
 
-        public int InnerWidth { get; private set; }
         public int OuterWidth { get; private set; }
-
-        public int InnerHeight { get; private set; }
         public int OuterHeight { get; private set; }
 
         public int ScreenX { get; private set; }
@@ -99,10 +93,12 @@ namespace Mir.Client.Controls
         public event EventHandler GotFocus;
         public event EventHandler LostFocus;
 
-        public BaseControl(IDrawerManager drawerManager, IRenderTargetManager renderTargetManager)
+        public BaseControl(ILifetimeScope scope)
         {
-            DrawerManager = drawerManager;
-            RenderTargetManager = renderTargetManager;
+            _scope = scope;
+
+            DrawerManager = scope.Resolve<IDrawerManager>();
+            RenderTargetManager = scope.Resolve<IRenderTargetManager>();
 
             BackgroundColor = Color.Transparent;
 
@@ -124,6 +120,15 @@ namespace Mir.Client.Controls
         }
 
         #region Public Methods
+
+        public TControl CreateControl<TControl>(Action<TControl> configurer = null) where TControl : BaseControl
+        {
+            var control = _scope.Resolve<TControl>();
+            configurer?.Invoke(control);
+            Controls.Add(control);
+            return control;
+        }
+
         public void Focus()
         {
             if (!IsControl) return;
@@ -147,9 +152,8 @@ namespace Mir.Client.Controls
                 && CheckTextureValid();
 
             if (StateChanged(
-                    nameof(Width), nameof(Height),
-                    nameof(PaddingBottom), nameof(PaddingTop), nameof(PaddingLeft), nameof(PaddingRight),
-                    nameof(BackgroundColor), nameof(Opacity)
+                    nameof(Width), nameof(Height), nameof(OffsetX), nameof(OffsetY),
+                    nameof(BackgroundColor), nameof(Opacity), nameof(HorizontalCenter), nameof(VerticalCenter)
                 ))
             {
                 Parent?.InvalidateTexture();
@@ -196,7 +200,16 @@ namespace Mir.Client.Controls
             {
                 var useOpacity = Opacity >= 0 && Opacity < 1;
 
-                using (var ctx = DrawerManager.PrepareSpriteBatch())
+                var blendState = UseBlend ? new BlendState
+                {
+                    ColorSourceBlend = Blend.SourceAlpha,
+                    AlphaSourceBlend = Blend.SourceAlpha,
+                    ColorDestinationBlend = Blend.One,
+                    AlphaDestinationBlend = Blend.One,
+                    BlendFactor = new Color(255, 255, 255, 255)
+                } : BlendState.AlphaBlend;
+
+                using (var ctx = DrawerManager.PrepareSpriteBatch(blendState))
                 {
                     ctx.Instance.Draw(_renderTarget2D, new Vector2(ScreenX, ScreenY), useOpacity ? Color.White * (float)Opacity : Color.White);
                 }
@@ -346,20 +359,22 @@ namespace Mir.Client.Controls
             var parentScreenX = Parent?.ScreenX ?? 0;
             var parentScreenY = Parent?.ScreenY ?? 0;
 
-            var parentWidth = Parent?.InnerWidth ?? 1024; // todo: get width from device manager
-            var parentHeight = Parent?.InnerHeight ?? 768; // todo: get height from device manager
+            var parentWidth = Parent?.OuterWidth ?? DrawerManager.Width;
+            var parentHeight = Parent?.OuterHeight ?? DrawerManager.Height;
 
             var screenX = 0;
             var screenY = 0;
 
-            if (Left != null) screenX = Left.Value + (MarginLeft ?? 0);
-            else if (Right != null) screenX = parentWidth - Right.Value - (MarginRight ?? 0) - OuterWidth;
+            if (HorizontalCenter) screenX = (parentWidth / 2) - (OuterWidth / 2);
+            else if (Left != null) screenX = Left.Value;
+            else if (Right != null) screenX = parentWidth - Right.Value - OuterWidth;
 
-            if (Top != null) screenY = Top.Value + (MarginTop ?? 0);
-            else if (Bottom != null) screenY = parentHeight - Bottom.Value - (MarginBottom ?? 0) - OuterHeight;
+            if (VerticalCenter) screenY = (parentHeight / 2) - (OuterHeight / 2);
+            else if (Top != null) screenY = Top.Value;
+            else if (Bottom != null) screenY = parentHeight - Bottom.Value - OuterHeight;
 
-            ScreenX = screenX;
-            ScreenY = screenY;
+            ScreenX = screenX + (OffsetX ?? 0);
+            ScreenY = screenY + (OffsetY ?? 0);
 
             DisplayArea = new Rectangle(parentScreenX + ScreenX, parentScreenY + ScreenY, OuterWidth, OuterHeight);
         }
@@ -372,24 +387,14 @@ namespace Mir.Client.Controls
 
             if (size.X <= 0 || size.Y <= 0)
             {
-                InnerHeight = 0;
-                InnerWidth = 0;
                 OuterHeight = 0;
                 OuterHeight = 0;
                 return;
             }
 
-            InnerWidth = (int)size.X + (PaddingLeft ?? 0) + (PaddingRight ?? 0);
-            InnerHeight = (int)size.Y + (PaddingTop ?? 0) + (PaddingBottom ?? 0);
-
             // TODO: pending add border sizes
-            OuterWidth = InnerWidth;
-            OuterHeight = InnerHeight;
-        }
-
-        private void UpdateTouchState()
-        {
-
+            OuterWidth = (int)size.X;
+            OuterHeight = (int)size.Y;
         }
 
         private void OnLostFocus()

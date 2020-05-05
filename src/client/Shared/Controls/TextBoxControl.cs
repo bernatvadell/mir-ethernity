@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Autofac;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Mir.Client.Models;
@@ -37,10 +38,10 @@ namespace Mir.Client.Controls
 
         public SpriteFont Font { get => _contentAccess.Fonts[FontType]; }
 
-        public TextBoxControl(IDrawerManager drawerManager, IRenderTargetManager renderTargetManager, IContentAccess contentAccess) : base(drawerManager, renderTargetManager)
+        public TextBoxControl(ILifetimeScope scope) : base(scope)
         {
             _visibleTextCursorController = new TimeController(TimeSpan.FromSeconds(0.5));
-            _contentAccess = contentAccess;
+            _contentAccess = scope.Resolve<IContentAccess>();
 
             IsControl = true;
             Drawable = true;
@@ -92,7 +93,7 @@ namespace Mir.Client.Controls
                     ctx.Instance.DrawString(Font, drawText, new Vector2(2, 1), FontColor);
                 }
 
-                if (_visibleTextCursor) ctx.Instance.DrawLine(new Vector2(_cursorPosition.X + 3, 2), new Vector2(_cursorPosition.X + 3, InnerHeight - 2), Color.White, 1);
+                if (_visibleTextCursor) ctx.Instance.DrawLine(new Vector2(_cursorPosition.X + 3, 2), new Vector2(_cursorPosition.X + 3, OuterHeight - 2), Color.White, 1);
             }
         }
 

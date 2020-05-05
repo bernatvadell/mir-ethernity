@@ -57,7 +57,7 @@ namespace Mir.Client.Controls.Animators
                 Current += Steps;
                 NextTick = gameTime.TotalGameTime + DelayFrame;
 
-                if (Current > To)
+                if (Current >= To)
                 {
                     if (!Loop)
                     {

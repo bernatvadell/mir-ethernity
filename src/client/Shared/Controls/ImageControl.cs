@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Autofac;
+using Microsoft.Xna.Framework;
 using Mir.Client.Services;
 using Mir.Ethernity.ImageLibrary;
 using Mir.Models;
@@ -14,7 +15,7 @@ namespace Mir.Client.Controls
         private readonly ILibraryResolver _libraryResolver;
 
         [Observable]
-        public LibraryType LibraryType { get; set; }
+        public LibraryType Library { get; set; }
 
         [Observable]
         public ImageType ImageType { get; set; }
@@ -22,38 +23,50 @@ namespace Mir.Client.Controls
         [Observable]
         public int Index { get; set; }
 
-        protected IImageLibrary Library { get; private set; }
+        [Observable]
+        public bool UseOffset { get; set; }
+
+        protected IImageLibrary LibraryManager { get; private set; }
         protected IImage Image { get; private set; }
 
         public ImageControl(
-            IDrawerManager drawerManager, IRenderTargetManager renderTargetManager, 
-            ILibraryResolver libraryResolver, ITextureGenerator textureGenerator
-        ) : base(drawerManager, renderTargetManager)
+           ILifetimeScope scope
+        ) : base(scope)
         {
-            _libraryResolver = libraryResolver ?? throw new ArgumentNullException(nameof(libraryResolver));
-            
+            _libraryResolver = scope.Resolve<ILibraryResolver>();
+
             Drawable = true;
             ImageType = ImageType.Image;
-            LibraryType = LibraryType.None;
+            Library = LibraryType.None;
             Index = 0;
         }
 
         protected override void UpdateState(GameTime gameTime)
         {
-            if (StateChanged(nameof(LibraryType)))
-            {
-                Library = _libraryResolver.Resolve(LibraryType);
-            }
+            if (StateChanged(nameof(Library)))
+                LibraryManager = _libraryResolver.Resolve(Library);
 
-            if (StateChanged(nameof(ImageType), nameof(Index)))
+            var imageChanged = StateChanged(nameof(ImageType), nameof(Index));
+            if (imageChanged)
+                Image = LibraryManager?[Index]?[ImageType];
+
+            if (imageChanged || StateChanged(nameof(UseOffset)))
             {
-                Image = Library?[Index][ImageType];
+                if (Image != null && UseOffset)
+                {
+                    OffsetX = Image.OffsetX;
+                    OffsetY = Image.OffsetY;
+                }
+                else
+                {
+                    OffsetX = OffsetY = null;
+                }
             }
         }
 
         protected override bool CheckTextureValid()
         {
-            return !StateChanged(nameof(LibraryType), nameof(ImageType), nameof(Index));
+            return !StateChanged(nameof(Library), nameof(ImageType), nameof(Index), nameof(UseOffset));
         }
 
         protected override void DrawTexture()

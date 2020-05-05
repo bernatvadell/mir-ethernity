@@ -9,23 +9,17 @@ namespace Mir.Client.Controls.Animators
     {
         private readonly Action<BaseControl, float> _propertySetter;
 
-        public bool Reverse { get; set; }
 
-        public PropertyAnimation(Action<BaseControl, float> propertySetter, float from, float to, float steps, TimeSpan delay, bool reverse = false, bool loop = false)
+        public PropertyAnimation(Action<BaseControl, float> propertySetter, float from, float to, float steps, TimeSpan delay, bool loop = false)
             : base(from, to, steps, delay, loop)
         {
             _propertySetter = propertySetter;
-            Reverse = reverse;
         }
 
         protected override void Apply()
         {
-            _propertySetter(Control, Reverse ? To - Current : Current);
+            _propertySetter(Control, Current);
         }
 
-        protected override void OnLoopCompleted()
-        {
-            Reverse = !Reverse;
-        }
     }
 }
