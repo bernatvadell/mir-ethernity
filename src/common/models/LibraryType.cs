@@ -5,6 +5,7 @@ namespace Mir.Models
     public enum LibraryType
     {
         None,
-        Interface1c
+        Interface1c,
+        Interface,
     }
 }

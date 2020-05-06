@@ -39,7 +39,8 @@ namespace Mir.Client.Controls
         public bool IsControl { get; set; } = false;
         public string Id { get; set; }
         public bool IsDisposed { get; private set; }
-
+        [Observable]
+        public bool Enabled { get; set; } = true;
         [Observable]
         public float Opacity { get; set; } = 1f;
         [Observable]
@@ -325,7 +326,7 @@ namespace Mir.Client.Controls
             return false;
         }
 
-        protected virtual Vector2 GetComponentSize()
+        internal virtual Vector2 GetComponentSize()
         {
             return Parent?.GetComponentSize() ?? new Vector2(DrawerManager.Width, DrawerManager.Height);
         }

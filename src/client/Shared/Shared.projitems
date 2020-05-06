@@ -12,6 +12,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Animators\Animation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\Animators\PropertyAnimation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\BaseControl.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\ButtonControl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ControlCollection.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ImageControl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\LabelControl.cs" />

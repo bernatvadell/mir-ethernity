@@ -4,6 +4,8 @@ using Mir.Client.Models;
 using Mir.Ethernity.ImageLibrary;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
 using System.Text;
 
 namespace Mir.Client.Services.Default
@@ -60,8 +62,20 @@ namespace Mir.Client.Services.Default
 
         public Texture2D GenerateTexture(IImage image)
         {
-            var data = image.GetBuffer();
-            return _textureGenerator.Generate(_device, image.Width, image.Height, image.DataType, data);
+            var buffer = image.GetBuffer();
+
+            if (image.Compression == CompressionType.Deflate)
+            {
+                using (var output = new MemoryStream())
+                using (var gz = new DeflateStream(new MemoryStream(buffer), CompressionMode.Decompress))
+                {
+                    gz.CopyTo(output);
+                    gz.Close();
+                    buffer = output.ToArray();
+                }
+            }
+
+            return _textureGenerator.Generate(_device, image.Width, image.Height, image.DataType, buffer);
         }
 
         public Point GetResizedPoint(Point point)

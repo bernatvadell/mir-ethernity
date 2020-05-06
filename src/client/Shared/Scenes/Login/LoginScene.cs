@@ -19,8 +19,6 @@ namespace Mir.Client.Scenes.Login
              CreateControl<IntroBackground>();
 
             _loginBox = CreateControl<LoginBox>();
-
-           
         }
     }
 }

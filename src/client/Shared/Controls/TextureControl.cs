@@ -34,7 +34,7 @@ namespace Mir.Client.Controls
             }
         }
 
-        protected override Vector2 GetComponentSize()
+        internal override Vector2 GetComponentSize()
         {
             if (Texture == null) return Vector2.Zero;
             return new Vector2(Texture.Width, Texture.Height);

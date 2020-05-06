@@ -85,7 +85,7 @@ namespace Mir.Client
             _containerBuilder.RegisterType(_assetLoaderType ?? throw new ServiceNotSpecifiedException(nameof(IAssetLoader))).As<IAssetLoader>().SingleInstance();
             _containerBuilder.RegisterType(_gameContext ?? throw new ServiceNotSpecifiedException(nameof(GameContext))).As<Game>().SingleInstance();
 
-            _containerBuilder.RegisterType(_imageLibraryType).As<IImageLibrary>().SingleInstance();
+            _containerBuilder.RegisterType(_imageLibraryType).As<IImageLibrary>().InstancePerDependency();
             _containerBuilder.RegisterType(_mapReaderType).As<IMapReader>().SingleInstance();
 
             _containerBuilder.RegisterType<ContentAccess>().As<IContentAccess>().SingleInstance();

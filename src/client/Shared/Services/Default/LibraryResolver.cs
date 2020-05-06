@@ -15,7 +15,8 @@ namespace Mir.Client.Services.Default
         {
             _libraries = new Dictionary<LibraryType, IImageLibrary>
             {
-                { LibraryType.Interface1c, container.Resolve<IImageLibrary>(new TypedParameter(typeof(string), assetLoader.GetPath("data/interface1c.zl"))) }
+                { LibraryType.Interface1c, container.Resolve<IImageLibrary>(new TypedParameter(typeof(string), assetLoader.GetPath("data/interface1c.zl"))) },
+                { LibraryType.Interface, container.Resolve<IImageLibrary>(new TypedParameter(typeof(string), assetLoader.GetPath("data/interface.zl"))) }
             };
         }
 

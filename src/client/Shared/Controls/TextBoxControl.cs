@@ -56,7 +56,7 @@ namespace Mir.Client.Controls
             LostFocus += TextBoxControl_LostFocus;
         }
 
-        protected override Vector2 GetComponentSize()
+        internal override Vector2 GetComponentSize()
         {
             return new Vector2(Width ?? 0, Height ?? 0);
         }

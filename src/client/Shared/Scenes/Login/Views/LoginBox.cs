@@ -37,6 +37,22 @@ namespace Mir.Client.Scenes.Login.Views
                 control.Top = 64;
                 control.Type = TextBoxInputType.Password;
             });
+
+            CreateControl<ButtonControl>((control) =>
+            {
+                control.Id = "btn_login";
+                control.Left = 550;
+                control.Top = 60;
+                control.Text = "Login";
+            });
+
+            CreateControl<ButtonControl>((control) =>
+            {
+                control.Id = "btn_exit";
+                control.Left = 680;
+                control.Top = 60;
+                control.Text = "Exit";
+            });
         }
     }
 }

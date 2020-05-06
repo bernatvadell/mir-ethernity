@@ -56,7 +56,7 @@ namespace Mir.Client.Controls
             }
         }
 
-        protected override Vector2 GetComponentSize()
+        internal override Vector2 GetComponentSize()
         {
             return _componentSize;
         }
