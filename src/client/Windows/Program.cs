@@ -1,6 +1,8 @@
 ﻿using Mir.Client.Controls;
 using Mir.Client.Services;
 using Mir.Client.Services.Default;
+using Mir.Ethernity.ImageLibrary.Zircon;
+using Mir.Ethernity.MapLibrary.Wemade;
 using System;
 
 namespace Mir.Client
@@ -18,6 +20,8 @@ namespace Mir.Client
         {
             var game = GameBuilder.Create()
                 .UseTextureGenerator<TextureGenerator>()
+                .UseMapReader<WemadeMapReader>()
+                .UseImageLibrary<ZirconImageLibrary>()
                 .UseAssetLoader<AssetLoader>()
                 .UseContext<WindowsGameContext>()
                 .UseGamePadService<MouseGamePadService>()

@@ -36,13 +36,19 @@ namespace Mir.Client
             Container = container ?? throw new ArgumentNullException(nameof(container));
             IsFixedTimeStep = Config.FPSCap;
             MyraEnvironment.Game = this;
+
+#if WINDOWS || LINUX
+            IsMouseVisible = true;
             Window.TextInput += Window_TextInput;
+#endif
         }
 
+#if WINDOWS || LINUX
         private void Window_TextInput(object sender, TextInputEventArgs e)
         {
             Desktop.OnChar(e.Character);
         }
+#endif
 
         protected override void LoadContent()
         {

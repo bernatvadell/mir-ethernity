@@ -45,9 +45,30 @@
     <AndroidLinkMode>SdkOnly</AndroidLinkMode>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Autofac, Version=5.1.4.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Autofac.5.1.4\lib\netstandard2.1\Autofac.dll</HintPath>
+    </Reference>
+    <Reference Include="info.lundin.math, Version=1.2.6.0, Culture=neutral, PublicKeyToken=2f7fe9ec5efab85f, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\info.lundin.math.dll.1.2.6\lib\netstandard2.0\info.lundin.math.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=3.1.3.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Microsoft.Extensions.Logging.Abstractions.3.1.3\lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Mir.Ethernity.ImageLibrary, Version=1.3.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\mir.ethernity.imagelibrary.1.3.1\lib\netstandard2.0\Mir.Ethernity.ImageLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="Mir.Ethernity.MapLibrary, Version=1.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Mir.Ethernity.MapLibrary.1.0.5\lib\netstandard2.0\Mir.Ethernity.MapLibrary.dll</HintPath>
+    </Reference>
     <Reference Include="Mono.Android" />
     <Reference Include="mscorlib" />
+    <Reference Include="Myra, Version=0.9.9.202, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Myra.0.9.9.202\lib\netstandard2.0\Myra.dll</HintPath>
+    </Reference>
     <Reference Include="OpenTK-1.0" />
+    <Reference Include="protobuf-net, Version=2.4.0.0, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\protobuf-net.2.4.6\lib\netstandard2.0\protobuf-net.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -55,14 +76,17 @@
     <Reference Include="MonoGame.Framework">
       <HintPath>$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\Android\MonoGame.Framework.dll</HintPath>
     </Reference>
+    <Reference Include="XNAssets, Version=0.5.0.6, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\XNAssets.0.5.0.6\lib\netstandard2.0\XNAssets.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Activity1.cs" />
-    <Compile Include="Game1.cs" />
+    <Compile Include="GameActivity.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="Resources\AboutResources.txt" />
     <None Include="Assets\AboutAssets.txt" />
   </ItemGroup>
@@ -87,6 +111,21 @@
   <ItemGroup>
     <None Include="Properties\AndroidManifest.xml" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\common\models\Models.csproj">
+      <Project>{918103d3-a72c-40fd-a907-03e259021e3d}</Project>
+      <Name>Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\NetworkServer\Network.csproj">
+      <Project>{bf4b5e0b-873e-4616-a094-130b025d8b92}</Project>
+      <Name>Network</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\packets\Packets.csproj">
+      <Project>{21c7e888-3e5c-4cb6-b01b-f8513c118007}</Project>
+      <Name>Packets</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="..\Shared\Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

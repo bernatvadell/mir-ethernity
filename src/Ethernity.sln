@@ -28,13 +28,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Models", "common\models\Mod
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Packets.Tests", "common\packets.tests\Packets.Tests.csproj", "{F16636CB-8A17-4D40-BD01-BA2A61B2C05C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Network", "common\NetworkServer\Network.csproj", "{BF4B5E0B-873E-4616-A094-130B025D8B92}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Network", "common\NetworkServer\Network.csproj", "{BF4B5E0B-873E-4616-A094-130B025D8B92}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Android", "client\Android\Android.csproj", "{E91DE2CA-D046-47A5-A76E-AC8D2BF3FCA7}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		client\Shared\Shared.projitems*{316bcd5f-1374-4715-a519-93d9c0e9a772}*SharedItemsImports = 4
 		client\Shared\Shared.projitems*{a0cdbd0e-3a41-42b7-9425-a838bc2c7383}*SharedItemsImports = 13
 		client\Shared\Shared.projitems*{b448599e-7cd0-4143-8fdc-e6d8a5da06b9}*SharedItemsImports = 4
+		client\Shared\Shared.projitems*{e91de2ca-d046-47a5-a76e-ac8d2bf3fca7}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -106,6 +109,18 @@ Global
 		{BF4B5E0B-873E-4616-A094-130B025D8B92}.Release|Any CPU.Build.0 = Release|Any CPU
 		{BF4B5E0B-873E-4616-A094-130B025D8B92}.Release|x86.ActiveCfg = Release|Any CPU
 		{BF4B5E0B-873E-4616-A094-130B025D8B92}.Release|x86.Build.0 = Release|Any CPU
+		{E91DE2CA-D046-47A5-A76E-AC8D2BF3FCA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E91DE2CA-D046-47A5-A76E-AC8D2BF3FCA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E91DE2CA-D046-47A5-A76E-AC8D2BF3FCA7}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{E91DE2CA-D046-47A5-A76E-AC8D2BF3FCA7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E91DE2CA-D046-47A5-A76E-AC8D2BF3FCA7}.Debug|x86.Build.0 = Debug|Any CPU
+		{E91DE2CA-D046-47A5-A76E-AC8D2BF3FCA7}.Debug|x86.Deploy.0 = Debug|Any CPU
+		{E91DE2CA-D046-47A5-A76E-AC8D2BF3FCA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E91DE2CA-D046-47A5-A76E-AC8D2BF3FCA7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E91DE2CA-D046-47A5-A76E-AC8D2BF3FCA7}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{E91DE2CA-D046-47A5-A76E-AC8D2BF3FCA7}.Release|x86.ActiveCfg = Release|Any CPU
+		{E91DE2CA-D046-47A5-A76E-AC8D2BF3FCA7}.Release|x86.Build.0 = Release|Any CPU
+		{E91DE2CA-D046-47A5-A76E-AC8D2BF3FCA7}.Release|x86.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -120,6 +135,7 @@ Global
 		{918103D3-A72C-40FD-A907-03E259021E3D} = {010DAF68-ABA5-477A-8354-921E3D2FAEF6}
 		{F16636CB-8A17-4D40-BD01-BA2A61B2C05C} = {010DAF68-ABA5-477A-8354-921E3D2FAEF6}
 		{BF4B5E0B-873E-4616-A094-130B025D8B92} = {010DAF68-ABA5-477A-8354-921E3D2FAEF6}
+		{E91DE2CA-D046-47A5-A76E-AC8D2BF3FCA7} = {05D9436F-6C0B-44E7-9443-48DA6930EBCA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8B35C51D-1BEF-4E39-9731-2A8C58A96A9E}

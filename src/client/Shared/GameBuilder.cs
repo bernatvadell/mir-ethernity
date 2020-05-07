@@ -8,9 +8,7 @@ using Mir.Client.Scenes;
 using Mir.Client.Services;
 using Mir.Client.Services.Default;
 using Mir.Ethernity.ImageLibrary;
-using Mir.Ethernity.ImageLibrary.Zircon;
 using Mir.Ethernity.MapLibrary;
-using Mir.Ethernity.MapLibrary.Wemade;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -36,9 +34,7 @@ namespace Mir.Client
         }
 
         private void SetDefaultServices()
-        {
-            _imageLibraryType = typeof(ZirconImageLibrary);
-            _mapReaderType = typeof(WemadeMapReader);
+        {;
         }
 
         public GameBuilder OverrideControl<TOriginal, TOverride>() where TOriginal : BaseControl where TOverride : TOriginal
@@ -68,6 +64,12 @@ namespace Mir.Client
         public GameBuilder UseImageLibrary<TImageLibrary>() where TImageLibrary : IImageLibrary
         {
             _imageLibraryType = typeof(TImageLibrary);
+            return this;
+        }
+
+        public GameBuilder UseMapReader<TMapReader>() where TMapReader : IMapReader
+        {
+            _mapReaderType = typeof(TMapReader);
             return this;
         }
 
