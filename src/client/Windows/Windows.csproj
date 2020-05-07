@@ -55,6 +55,9 @@
     <Reference Include="Autofac, Version=5.1.3.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <HintPath>..\packages\Autofac.5.1.3\lib\net461\Autofac.dll</HintPath>
     </Reference>
+    <Reference Include="info.lundin.math, Version=1.2.6.0, Culture=neutral, PublicKeyToken=2f7fe9ec5efab85f, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\info.lundin.math.dll.1.2.6\lib\net40\info.lundin.math.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.1.1.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
@@ -84,6 +87,9 @@
     </Reference>
     <Reference Include="MonoGame.Framework">
       <HintPath>$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="Myra, Version=0.9.9.202, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Myra.0.9.9.202\lib\net45\Myra.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -118,6 +124,9 @@
     </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="XNAssets, Version=0.5.0.6, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\XNAssets.0.5.0.6\lib\net45\XNAssets.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Icon.ico" />

@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Mir.Client.Controls;
 using Mir.Client.Scenes.Login.Views;
+using Myra.Graphics2D.UI;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,9 +17,19 @@ namespace Mir.Client.Scenes.Login
         {
             Id = nameof(LoginScene);
 
-             CreateControl<IntroBackground>();
+            // CreateControl<IntroBackground>();
 
-            _loginBox = CreateControl<LoginBox>();
+            //_loginBox = CreateControl<LoginBox>();
+
+            var panel = new Panel();
+
+            panel.Widgets.Add(new TextBox
+            {
+                Left = 100,
+                Top = 100
+            });
+            
+            Desktop.Root = panel;
         }
     }
 }

@@ -6,6 +6,8 @@ using Mir.Client.Models;
 using Mir.Client.Scenes;
 using Mir.Client.Scenes.Splash;
 using Mir.Client.Services;
+using Myra;
+using Myra.Graphics2D.UI;
 using System;
 using System.Collections.Generic;
 
@@ -33,10 +35,19 @@ namespace Mir.Client
             Content.RootDirectory = "Content";
             Container = container ?? throw new ArgumentNullException(nameof(container));
             IsFixedTimeStep = Config.FPSCap;
+            MyraEnvironment.Game = this;
+            Window.TextInput += Window_TextInput;
+        }
+
+        private void Window_TextInput(object sender, TextInputEventArgs e)
+        {
+            Desktop.OnChar(e.Character);
         }
 
         protected override void LoadContent()
         {
+            Desktop.HasExternalTextInput = true;
+
             ContentAccess = Container.Resolve<IContentAccess>();
             DrawerManager = Container.Resolve<IDrawerManager>();
             SceneManager = Container.Resolve<ISceneManager>();
@@ -96,6 +107,8 @@ namespace Mir.Client
 
             using (var ctx = DrawerManager.PrepareSpriteBatch())
                 ctx.Instance.DrawString(ContentAccess.Fonts[FontType.Normal], debugLabel, new Vector2(10, 10), Color.White);
+
+            Desktop.Render();
 
             base.Draw(gameTime);
 
