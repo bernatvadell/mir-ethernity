@@ -28,17 +28,17 @@ namespace Mir.Client.Models
             _nextTick = TimeSpan.Zero;
         }
 
-        public bool CheckProcess(GameTime gameTime)
+        public bool CheckProcess()
         {
             if (_nextTick == TimeSpan.Zero)
             {
-                _nextTick = gameTime.TotalGameTime.Add(_elapse);
+                _nextTick = Envir.Time.TotalGameTime.Add(_elapse);
                 return false;
             }
 
-            if (gameTime.TotalGameTime >= _nextTick)
+            if (Envir.Time.TotalGameTime >= _nextTick)
             {
-                _nextTick = gameTime.TotalGameTime.Add(_elapse);
+                _nextTick = Envir.Time.TotalGameTime.Add(_elapse);
                 return true;
             }
 

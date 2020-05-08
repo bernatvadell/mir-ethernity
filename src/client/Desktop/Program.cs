@@ -22,8 +22,6 @@ namespace Mir.Client
                .UseAssetLoader<AssetLoader>()
                .UseMapReader<WemadeMapReader>()
                .UseImageLibrary<ZirconImageLibrary>()
-               .UseGamePadService<MouseGamePadService>()
-               .UseGamePadService<KeyboardGamePadService>()
                .Build();
 
             using (game) game.Run();

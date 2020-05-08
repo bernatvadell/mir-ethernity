@@ -9,19 +9,10 @@
     <Import_RootNamespace>Mir.Client</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\Animators\Animation.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\Animators\PropertyAnimation.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\BaseControl.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\ButtonControl.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\ControlCollection.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\ImageControl.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\LabelControl.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\ObservableAttribute.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\TextBoxControl.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\TextureControl.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Controls\TouchEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Envir.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions\SceneChangedException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions\ServiceNotSpecifiedException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Fonts.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Config.cs" />
@@ -29,27 +20,27 @@
     <Compile Include="$(MSBuildThisFileDirectory)Models\FontType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\KeyEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\TimeController.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MyraCustom\MirButton.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MyraCustom\MirWindow.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MyraCustom\MirImage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MyraCustom\MirImageBrush.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MyraCustom\MirWidget.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MyraCustom\WidgetAnimation.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Primitive2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\BaseScene.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\GameScene.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Login\LoginBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Login\LoginScene.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Login\Views\IntroBackground.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Login\Views\LoginBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Splash\SplashScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Default\ContentAccess.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Default\DrawerManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\Default\KeyboardGamePadService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Default\LibraryResolver.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\Default\MouseGamePadService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\Default\RenderTargetManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\Default\SceneManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)SceneManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\IAssetLoader.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\IContentAccess.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\IDrawerManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\IGamePadService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\ILibraryResolver.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\IRenderTargetManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\ISceneManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Services\ITextureGenerator.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,21 +1,25 @@
 ﻿using Autofac;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Mir.Client.Controls;
+using Mir.Client.MyraCustom;
 using Mir.Client.Services;
+using Myra.Graphics2D.UI;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Mir.Client.Scenes
 {
-    public abstract class BaseScene : BaseControl
+    public abstract class BaseScene : Panel
     {
-        protected ISceneManager SceneManager { get; private set; }
-
-        public BaseScene(ILifetimeScope scope) : base(scope)
+        public virtual void Update()
         {
-            SceneManager = scope.Resolve<ISceneManager>();
+            //foreach (var widget in MirWidget.Widgets)
+            //{
+            //    widget.Update();
+            //}
         }
+
+        public virtual void Load() { }
     }
 }

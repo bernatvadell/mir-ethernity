@@ -32,6 +32,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Network", "common\NetworkSe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Android", "client\Android\Android.csproj", "{E91DE2CA-D046-47A5-A76E-AC8D2BF3FCA7}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Myra.MonoGame", "..\..\..\GITPersonal\Myra\src\Myra\Myra.MonoGame.csproj", "{A3E6F8B3-D7A4-40CF-A6F7-92363029EDAD}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		client\Shared\Shared.projitems*{316bcd5f-1374-4715-a519-93d9c0e9a772}*SharedItemsImports = 4
@@ -121,6 +123,14 @@ Global
 		{E91DE2CA-D046-47A5-A76E-AC8D2BF3FCA7}.Release|x86.ActiveCfg = Release|Any CPU
 		{E91DE2CA-D046-47A5-A76E-AC8D2BF3FCA7}.Release|x86.Build.0 = Release|Any CPU
 		{E91DE2CA-D046-47A5-A76E-AC8D2BF3FCA7}.Release|x86.Deploy.0 = Release|Any CPU
+		{A3E6F8B3-D7A4-40CF-A6F7-92363029EDAD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A3E6F8B3-D7A4-40CF-A6F7-92363029EDAD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A3E6F8B3-D7A4-40CF-A6F7-92363029EDAD}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A3E6F8B3-D7A4-40CF-A6F7-92363029EDAD}.Debug|x86.Build.0 = Debug|Any CPU
+		{A3E6F8B3-D7A4-40CF-A6F7-92363029EDAD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A3E6F8B3-D7A4-40CF-A6F7-92363029EDAD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A3E6F8B3-D7A4-40CF-A6F7-92363029EDAD}.Release|x86.ActiveCfg = Release|Any CPU
+		{A3E6F8B3-D7A4-40CF-A6F7-92363029EDAD}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,8 +1,8 @@
 ﻿using Autofac;
 using Microsoft.Xna.Framework;
-using Mir.Client.Controls;
 using Mir.Client.Exceptions;
 using Mir.Client.Models;
+using Mir.Client.MyraCustom;
 using Mir.Client.Scenes;
 using Mir.Client.Scenes.Splash;
 using Mir.Client.Services;
@@ -13,7 +13,7 @@ using System.Collections.Generic;
 
 namespace Mir.Client
 {
-    public abstract class GameContext : Game
+    public class GameContext : Game
     {
         private readonly TimeController _fpsController = new TimeController(TimeSpan.FromSeconds(1));
         private readonly TimeController _upsController = new TimeController(TimeSpan.FromSeconds(1));
@@ -22,16 +22,16 @@ namespace Mir.Client
         private int _upsCounter = 0;
 
         protected ILifetimeScope Container { get; private set; }
-        protected ISceneManager SceneManager { get; private set; }
         protected IContentAccess ContentAccess { get; private set; }
         protected IDrawerManager DrawerManager { get; private set; }
-        protected ICollection<IGamePadService> GamePadServices { get; private set; }
 
         public int FPS { get; private set; }
         public int UPS { get; private set; }
 
         public GameContext(ILifetimeScope container)
         {
+            Envir.Game = this;
+
             Content.RootDirectory = "Content";
             Container = container ?? throw new ArgumentNullException(nameof(container));
             IsFixedTimeStep = Config.FPSCap;
@@ -56,12 +56,11 @@ namespace Mir.Client
 
             ContentAccess = Container.Resolve<IContentAccess>();
             DrawerManager = Container.Resolve<IDrawerManager>();
-            SceneManager = Container.Resolve<ISceneManager>();
-            GamePadServices = Container.Resolve<ICollection<IGamePadService>>();
 
             ContentAccess.LoadContent();
 
-            SceneManager.Load<SplashScene>(throwException: false);
+            Fonts.Instance.Load(Content);
+            SceneManager.Instance.Load(new SplashScene(), throwException: false);
 
             base.LoadContent();
         }
@@ -73,48 +72,45 @@ namespace Mir.Client
 
         protected override void Update(GameTime gameTime)
         {
-            if (_upsController.CheckProcess(gameTime))
+            Envir.Time = gameTime;
+
+            if (_upsController.CheckProcess())
             {
                 UPS = _upsCounter;
                 _upsCounter = 0;
             }
+
+            if (_fpsController.CheckProcess())
+            {
+                FPS = _fpsCounter;
+                _fpsCounter = 0;
+            }
+
             try
             {
-                UpdateScene(gameTime);
+                SceneManager.Instance.Active?.Update();
             }
             catch (SceneChangedException)
             {
-                UpdateScene(gameTime);
+                SceneManager.Instance.Active?.Update();
             }
 
             base.Update(gameTime);
             _upsCounter++;
         }
 
-        private void UpdateScene(GameTime gameTime)
-        {
-            foreach (var gps in GamePadServices)
-                gps.Update(gameTime);
-            SceneManager.Active.Update(gameTime);
-        }
-
         protected override void Draw(GameTime gameTime)
         {
-            if (_fpsController.CheckProcess(gameTime))
-            {
-                FPS = _fpsCounter;
-                _fpsCounter = 0;
-            }
+            WidgetAnimation.Time = gameTime;
 
             DrawerManager.Clear(Color.Black);
-            SceneManager.Active.Draw(gameTime);
 
-            var debugLabel = $"FPS: {FPS} - UPS: {UPS}, Hover Control: { BaseControl.HoverControl?.Id ?? "None" }, Focus Control: { BaseControl.FocusControl?.Id ?? "None" }";
+            Desktop.Render();
+
+            var debugLabel = $"FPS: {FPS} - UPS: {UPS}";
 
             using (var ctx = DrawerManager.PrepareSpriteBatch())
                 ctx.Instance.DrawString(ContentAccess.Fonts[FontType.Normal], debugLabel, new Vector2(10, 10), Color.White);
-
-            Desktop.Render();
 
             base.Draw(gameTime);
 

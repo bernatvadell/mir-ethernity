@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Mir.Client.Controls;
 using Mir.Client.Exceptions;
 using Mir.Client.Scenes;
 using Mir.Client.Services;
@@ -27,6 +26,8 @@ namespace Mir.Client
         private Type _gameContext;
         private List<Type> _gamePadServices = new List<Type>();
 
+        public static IContainer Container { get; private set; }
+
         private GameBuilder()
         {
             _containerBuilder = new ContainerBuilder();
@@ -37,21 +38,9 @@ namespace Mir.Client
         {;
         }
 
-        public GameBuilder OverrideControl<TOriginal, TOverride>() where TOriginal : BaseControl where TOverride : TOriginal
-        {
-            _overridedControls.Add(typeof(TOriginal), typeof(TOverride));
-            return this;
-        }
-
         public GameBuilder UseAssetLoader<TAssetLoader>() where TAssetLoader : IAssetLoader
         {
             _assetLoaderType = typeof(TAssetLoader);
-            return this;
-        }
-
-        public GameBuilder UseGamePadService<TGamePadService>() where TGamePadService : IGamePadService
-        {
-            _gamePadServices.Add(typeof(TGamePadService));
             return this;
         }
 
@@ -85,7 +74,7 @@ namespace Mir.Client
 
             _containerBuilder.RegisterType(_textureGeneratorType ?? throw new ServiceNotSpecifiedException(nameof(ITextureGenerator))).As<ITextureGenerator>().SingleInstance();
             _containerBuilder.RegisterType(_assetLoaderType ?? throw new ServiceNotSpecifiedException(nameof(IAssetLoader))).As<IAssetLoader>().SingleInstance();
-            _containerBuilder.RegisterType(_gameContext ?? throw new ServiceNotSpecifiedException(nameof(GameContext))).As<Game>().SingleInstance();
+            _containerBuilder.RegisterType<GameContext>().As<Game>().SingleInstance();
 
             _containerBuilder.RegisterType(_imageLibraryType).As<IImageLibrary>().InstancePerDependency();
             _containerBuilder.RegisterType(_mapReaderType).As<IMapReader>().SingleInstance();
@@ -93,17 +82,8 @@ namespace Mir.Client
             _containerBuilder.RegisterType<ContentAccess>().As<IContentAccess>().SingleInstance();
             _containerBuilder.RegisterType<DrawerManager>().As<IDrawerManager>().SingleInstance();
             _containerBuilder.RegisterType<RenderTargetManager>().As<IRenderTargetManager>().SingleInstance();
-            _containerBuilder.RegisterType<SceneManager>().As<ISceneManager>().SingleInstance();
             _containerBuilder.RegisterType<LibraryResolver>().As<ILibraryResolver>().SingleInstance();
 
-            _containerBuilder.RegisterAssemblyTypes(assembly)
-                .Where(t => !t.IsAbstract && t.IsSubclassOf(typeof(BaseScene)));
-
-            _containerBuilder.RegisterAssemblyTypes(assembly)
-                .Where(t => !t.IsAbstract && t.IsSubclassOf(typeof(BaseControl)));
-
-            foreach (var gps in _gamePadServices)
-                _containerBuilder.RegisterType(gps).As<IGamePadService>().SingleInstance();
 
             foreach (var control in _overridedControls)
                 _containerBuilder.RegisterType(control.Value).As(control.Key);
@@ -114,12 +94,12 @@ namespace Mir.Client
             _containerBuilder.Register((component) => new GraphicsDeviceManager(component.Resolve<Game>())).As<GraphicsDeviceManager>().SingleInstance();
             _containerBuilder.Register((component) => new SpriteBatch(component.Resolve<GraphicsDevice>())).As<SpriteBatch>().InstancePerDependency();
 
-            var container = _containerBuilder.Build();
+            Container = _containerBuilder.Build();
 
-            var game = container.Resolve<Game>();
+            var game = Container.Resolve<Game>();
             game.IsFixedTimeStep = Config.FPSCap;
 
-            var device = container.Resolve<GraphicsDeviceManager>();
+            var device = Container.Resolve<GraphicsDeviceManager>();
             device.SynchronizeWithVerticalRetrace = false;
 
             device.PreferredBackBufferWidth = 1024;

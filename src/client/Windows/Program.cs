@@ -1,5 +1,4 @@
-﻿using Mir.Client.Controls;
-using Mir.Client.Services;
+﻿using Mir.Client.Services;
 using Mir.Client.Services.Default;
 using Mir.Ethernity.ImageLibrary.Zircon;
 using Mir.Ethernity.MapLibrary.Wemade;
@@ -23,9 +22,6 @@ namespace Mir.Client
                 .UseMapReader<WemadeMapReader>()
                 .UseImageLibrary<ZirconImageLibrary>()
                 .UseAssetLoader<AssetLoader>()
-                .UseContext<WindowsGameContext>()
-                .UseGamePadService<MouseGamePadService>()
-                .UseGamePadService<KeyboardGamePadService>()
                 .Build();
 
             using (game)

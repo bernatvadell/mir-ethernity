@@ -1,11 +1,13 @@
 ﻿using Autofac;
 using Microsoft.Xna.Framework;
-using Mir.Client.Controls;
-using Mir.Client.Controls.Animators;
 using Mir.Client.Models;
+using Mir.Client.MyraCustom;
 using Mir.Client.Scenes.Login;
 using Mir.Client.Services;
 using Mir.Models;
+using Myra.Graphics2D;
+using Myra.Graphics2D.Brushes;
+using Myra.Graphics2D.UI;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,36 +18,23 @@ namespace Mir.Client.Scenes.Splash
     {
         private TimeController _splashTimeController = new TimeController(TimeSpan.FromSeconds(3));
 
-        public SplashScene(ILifetimeScope container, IContentAccess contentAccess) : base(container)
+        public SplashScene()
         {
-            Id = nameof(SplashScene);
-
-            CreateControl<ImageControl>((control) =>
+            Widgets.Add(new MirImage
             {
-                control.Id = "BackgroundImage";
-                control.Library = LibraryType.Interface1c;
-                control.Index = 6;
-                control.Width = DrawerManager.Width;
-                control.Height = DrawerManager.Height;
-            });
+                Index = 6,
+                Library = LibraryType.Interface1c
+            }.WithAnimation((s, e) => s.Opacity = (100 - e) / 100f, 0, 100, TimeSpan.FromSeconds(2), false));
 
-            CreateControl<TextureControl>((control) =>
-            {
-                control.Id = "OpacityLayer";
-                control.Width = DrawerManager.Width;
-                control.Height = DrawerManager.Height;
-                control.Opacity = 0;
-                control.Texture = contentAccess.BlackBackground;
-                control.AddAnimator(new PropertyAnimation((c, v) => c.Opacity = v, 0, 1, 0.01f, TimeSpan.FromSeconds(2)));
-            });
+
         }
 
-        protected override void UpdateState(GameTime gameTime)
+        public override void Update()
         {
-            if (_splashTimeController.CheckProcess(gameTime))
-            {
-                SceneManager.Load<LoginScene>();
-            }
+            if (_splashTimeController.CheckProcess())
+                SceneManager.Instance.Load(new LoginScene());
+
+            base.Update();
         }
     }
 }

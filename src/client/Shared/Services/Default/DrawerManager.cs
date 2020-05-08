@@ -17,6 +17,8 @@ namespace Mir.Client.Services.Default
         private readonly SpriteBatch _spriteBatch;
         private readonly ITextureGenerator _textureGenerator;
 
+        public static DrawerManager Instance { get; private set; }
+
         public Context<SpriteBatch> ActiveContext { get; private set; }
 
         public int Width { get => _graphicsDevice.PreferredBackBufferWidth; }
@@ -29,10 +31,15 @@ namespace Mir.Client.Services.Default
             ITextureGenerator textureGenerator
         )
         {
+            Instance = this;
             _device = device;
             _graphicsDevice = graphicsDevice;
             _spriteBatch = spriteBatch;
             _textureGenerator = textureGenerator;
+
+            _graphicsDevice.PreferredBackBufferWidth = 1024;
+            _graphicsDevice.PreferredBackBufferHeight = 768;
+
         }
 
         public Context<SpriteBatch> PrepareSpriteBatch(BlendState blendState = null)
