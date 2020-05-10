@@ -37,6 +37,8 @@ namespace Mir.Client
 			IsMouseVisible = true;
 			Window.TextInput += Window_TextInput;
 #endif
+
+			DrawerManager.Initialize();
 		}
 
 #if WINDOWS || LINUX
@@ -49,8 +51,8 @@ namespace Mir.Client
 		protected override void LoadContent()
 		{
 			Desktop.HasExternalTextInput = true;
-			DrawerManager.Load();
 			Fonts.Load(Content);
+			DrawerManager.Load();
 			SceneManager.Load(new SplashScene(), throwException: false);
 
 			base.LoadContent();

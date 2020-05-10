@@ -5,7 +5,6 @@ using System.Text;
 
 namespace Mir.Packets.Gate
 {
-    [Packet(PacketSource.Gate, PacketIndex.ClientConnectionChanged)]
     [ProtoContract]
     public class ClientConnectionChanged : Packet
     {

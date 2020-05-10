@@ -25,11 +25,10 @@ namespace Mir.Network.TCP
         public event EventHandler OnDisconnect;
         public event EventHandler<Packet> OnData;
 
-        public TCPNetworkClient(TCPNetworkClientOptions options, ILogger<TCPNetworkClient> logger, ILifetimeScope container)
+        public TCPNetworkClient(TCPNetworkClientOptions options, ILogger<TCPNetworkClient> logger = null)
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _logger = logger;
             _options = options ?? throw new ArgumentNullException(nameof(options));
-            _container = container;
         }
 
         public async Task Connect(CancellationToken cancellationToken = default)
@@ -49,7 +48,7 @@ namespace Mir.Network.TCP
 
             _connection.StartListenData(cancellationToken, _options.Source, false);
 
-            _logger.LogDebug($"Connected to server {_options.ServerIP}:{_options.ServerPort}");
+            _logger?.LogDebug($"Connected to server {_options.ServerIP}:{_options.ServerPort}");
         }
 
         private void ConnectCallback(IAsyncResult ar)
@@ -64,7 +63,7 @@ namespace Mir.Network.TCP
             try
             {
                 _socket.EndConnect(ar);
-                _connection = _container.Resolve<TCPConnection>(new TypedParameter(typeof(Socket), _socket));
+                _connection = new TCPConnection(_socket);
                 _connection.OnReceivePacket += Connection_OnReceivePacket;
                 _connection.OnDisconnect += Connection_OnDisconnect;
             }

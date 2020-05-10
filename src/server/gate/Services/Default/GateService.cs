@@ -53,7 +53,7 @@ namespace Mir.GateServer.Services.Default
 
         private void Listener_OnClientData(object sender, Message e)
         {
-
+            _serverClient.Send(new ClientPacket { SocketHandle = e.Connection.Handle, Packet = e.Packet });
         }
 
         private async void Listener_OnClientDisconnect(object sender, IConnection e)

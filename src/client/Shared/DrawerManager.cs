@@ -21,14 +21,18 @@ namespace Mir.Client
         public static int Width { get => Device.PreferredBackBufferWidth; }
         public static int Height { get => Device.PreferredBackBufferHeight; }
 
-        public static void Load()
+        public static void Initialize()
         {
             Device.PreferredBackBufferWidth = 1024;
             Device.PreferredBackBufferHeight = 768;
+            Device.SynchronizeWithVerticalRetrace = Config.VSync;
+        }
+
+        public static void Load()
+        {
             Sprite = new SpriteBatch(Graphics);
         }
 
-    
         public static Context<SpriteBatch> PrepareSpriteBatch(BlendState blendState = null)
         {
             if (ActiveContext != null)
@@ -42,6 +46,8 @@ namespace Mir.Client
 
             return ActiveContext;
         }
+
+    
 
         public static void Clear(Color color)
         {

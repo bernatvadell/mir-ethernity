@@ -13,7 +13,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions\SceneChangedException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Exceptions\ServiceNotSpecifiedException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Fonts.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)GameBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Config.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ITextureGenerator.cs" />

@@ -5,7 +5,6 @@ using System.Text;
 
 namespace Mir.Packets.Server
 {
-    [Packet(PacketSource.Server, PacketIndex.Disconnect)]
     [ProtoContract]
     public class Disconnect : Packet
     {
