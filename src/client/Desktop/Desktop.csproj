@@ -85,9 +85,6 @@
     <Reference Include="MonoGame.Framework">
       <HintPath>$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\DesktopGL\MonoGame.Framework.dll</HintPath>
     </Reference>
-    <Reference Include="Myra, Version=0.9.9.202, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Myra.0.9.9.202\lib\net45\Myra.dll</HintPath>
-    </Reference>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
@@ -181,6 +178,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\GITPersonal\Myra\src\Myra\Myra.MonoGame.csproj">
+      <Project>{a3e6f8b3-d7a4-40cf-a6f7-92363029edad}</Project>
+      <Name>Myra.MonoGame</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\common\models\Models.csproj">
       <Project>{918103d3-a72c-40fd-a907-03e259021e3d}</Project>
       <Name>Models</Name>

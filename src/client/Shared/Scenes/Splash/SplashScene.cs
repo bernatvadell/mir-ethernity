@@ -26,7 +26,27 @@ namespace Mir.Client.Scenes.Splash
                 Library = LibraryType.Interface1c
             }.WithAnimation((s, e) => s.Opacity = (100 - e) / 100f, 0, 100, TimeSpan.FromSeconds(2), false));
 
+var labelDragHandle = new Label() { Text = "Drag handle" };
+var draggableWidget = new VerticalStackPanel
+{
+    Border = new SolidBrush(Color.Red),
+    BorderThickness = new Thickness(1),
+    Left = 100,
+    Top = 100,
+    Width = 250,
+    Height = 250,
 
+    IsDraggable = true,
+    DragHandle = labelDragHandle,
+    DragDirection = DragDirection.Horizontal,
+
+    Widgets = {
+        labelDragHandle,
+        new Label() { Text = "This is body content" }
+    }
+};
+
+            Widgets.Add(draggableWidget);
         }
 
         public override void Update()
