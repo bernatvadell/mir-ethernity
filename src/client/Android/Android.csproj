@@ -109,8 +109,8 @@
     <None Include="Properties\AndroidManifest.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\GITPersonal\Myra\src\Myra\Myra.MonoGame.csproj">
-      <Project>{a3e6f8b3-d7a4-40cf-a6f7-92363029edad}</Project>
+    <ProjectReference Include="..\..\..\Myra\src\Myra\Myra.MonoGame.csproj">
+      <Project>{0dbe648d-2a6e-45e8-9343-82170b4e4855}</Project>
       <Name>Myra.MonoGame</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\common\models\Models.csproj">

@@ -1,0 +1,4 @@
+[submodule "Myra"]
+	path = Myra
+	url = https://github.com/bernatvadell/Myra.git
+	branch = master
