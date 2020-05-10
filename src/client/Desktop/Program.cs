@@ -17,14 +17,8 @@ namespace Mir.Client
         [STAThread]
         static void Main()
         {
-            var game = GameBuilder.Create()
-               .UseTextureGenerator<TextureGenerator>()
-               .UseAssetLoader<AssetLoader>()
-               .UseMapReader<WemadeMapReader>()
-               .UseImageLibrary<ZirconImageLibrary>()
-               .Build();
-
-            using (game) game.Run();
+            using (var game = new GameContext(new TextureGenerator())) 
+                game.Run();
         }
     }
 }

@@ -92,10 +92,8 @@ namespace Mir.Client.Scenes.Login
 
         public override void Load()
         {
-            _loginBox.Visible = false;
-            _window = MirWindow.ShowDialog("Loading", "Loading Client Information...\nPlease wait...");
-
-            _window = MirWindow.ShowDialog("Loading", "Loading Client Information...\nPlease wait...");
+            // _loginBox.Visible = false;
+            _window = MirWindow.ShowDialog("Loading", "Loading Client Information... fasgsagasfgfagfasgfasgfagfasgfagsfgfasgsfgfasgfasg\nPlease wait...");
         }
     }
 }

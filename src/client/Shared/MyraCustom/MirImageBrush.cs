@@ -1,5 +1,4 @@
-﻿using Autofac;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Mir.Client.Services;
 using Mir.Client.Services.Default;
@@ -21,7 +20,6 @@ namespace Mir.Client.MyraCustom
         private int _index;
         private bool _validTexture = false;
         private Texture2D _texture;
-        private ILibraryResolver _libraryResolver;
 
 
         public event EventHandler<IImage> ImageChanged;
@@ -62,11 +60,6 @@ namespace Mir.Client.MyraCustom
 
         public Rectangle? SourceRectangle { get; set; }
 
-        public MirImageBrush()
-        {
-            _libraryResolver = GameBuilder.Container.Resolve<ILibraryResolver>();
-        }
-
         public Point Size => Image == null ? Point.Zero : new Point(Image.Width, Image.Height);
         public bool Blend { get; set; }
 
@@ -81,7 +74,7 @@ namespace Mir.Client.MyraCustom
 
                 if (Image != null)
                 {
-                    _texture = Image != null ? DrawerManager.Instance.GenerateTexture(Image) : null;
+                    _texture = Image != null ? DrawerManager.GenerateTexture(Image) : null;
                     _validTexture = _texture != null;
                 }
             }
@@ -120,7 +113,7 @@ namespace Mir.Client.MyraCustom
 
         private void RefreshImageData()
         {
-            var image = _libraryResolver.Resolve(Library)?[Index]?[Type];
+            var image = LibraryResolver.Resolve(Library)?[Index]?[Type];
             if (image == Image) return;
 
             _validTexture = false;

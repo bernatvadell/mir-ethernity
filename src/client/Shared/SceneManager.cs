@@ -1,5 +1,4 @@
-﻿using Autofac;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Mir.Client.Exceptions;
 using Mir.Client.Scenes;
@@ -12,11 +11,9 @@ namespace Mir.Client
 {
     public class SceneManager 
     {
-        public static SceneManager Instance = new SceneManager();
+        public static BaseScene Active { get; private set; }
 
-        public BaseScene Active { get; private set; }
-
-        public void Load(BaseScene scene, bool throwException = true)
+        public static void Load(BaseScene scene, bool throwException = true)
         {
             Active?.RemoveFromDesktop();
             Active = scene;

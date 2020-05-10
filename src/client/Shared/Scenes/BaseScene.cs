@@ -1,5 +1,4 @@
-﻿using Autofac;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Mir.Client.MyraCustom;
 using Mir.Client.Services;

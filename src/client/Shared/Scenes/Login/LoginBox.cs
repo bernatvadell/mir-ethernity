@@ -38,7 +38,7 @@ namespace Mir.Client.Scenes.Login
                 Width = 184,
                 Height = 16,
                 Background = new SolidBrush(Color.Transparent),
-                Font = Fonts.Instance.Size8
+                Font = Fonts.Size8
             });
             _idField.KeyDown += IdField_KeyDown;
             _idField.SetKeyboardFocus();
@@ -52,7 +52,7 @@ namespace Mir.Client.Scenes.Login
                 Height = 16,
                 PasswordField = true,
                 Background = new SolidBrush(Color.Transparent),
-                Font = Fonts.Instance.Size8
+                Font = Fonts.Size8
             });
 
             Widgets.Add(_loginButton = new MirButton()

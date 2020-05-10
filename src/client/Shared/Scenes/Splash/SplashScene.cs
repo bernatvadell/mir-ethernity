@@ -1,5 +1,4 @@
-﻿using Autofac;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Mir.Client.Models;
 using Mir.Client.MyraCustom;
 using Mir.Client.Scenes.Login;
@@ -25,34 +24,12 @@ namespace Mir.Client.Scenes.Splash
                 Index = 6,
                 Library = LibraryType.Interface1c
             }.WithAnimation((s, e) => s.Opacity = (100 - e) / 100f, 0, 100, TimeSpan.FromSeconds(2), false));
-
-var labelDragHandle = new Label() { Text = "Drag handle" };
-var draggableWidget = new VerticalStackPanel
-{
-    Border = new SolidBrush(Color.Red),
-    BorderThickness = new Thickness(1),
-    Left = 100,
-    Top = 100,
-    Width = 250,
-    Height = 250,
-
-    IsDraggable = true,
-    DragHandle = labelDragHandle,
-    DragDirection = DragDirection.Horizontal,
-
-    Widgets = {
-        labelDragHandle,
-        new Label() { Text = "This is body content" }
-    }
-};
-
-            Widgets.Add(draggableWidget);
         }
 
         public override void Update()
         {
             if (_splashTimeController.CheckProcess())
-                SceneManager.Instance.Load(new LoginScene());
+                SceneManager.Load(new LoginScene());
 
             base.Update();
         }

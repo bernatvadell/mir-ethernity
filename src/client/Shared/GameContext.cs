@@ -1,5 +1,4 @@
-﻿using Autofac;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Mir.Client.Exceptions;
 using Mir.Client.Models;
 using Mir.Client.MyraCustom;
@@ -13,108 +12,103 @@ using System.Collections.Generic;
 
 namespace Mir.Client
 {
-    public class GameContext : Game
-    {
-        private readonly TimeController _fpsController = new TimeController(TimeSpan.FromSeconds(1));
-        private readonly TimeController _upsController = new TimeController(TimeSpan.FromSeconds(1));
+	public class GameContext : Game
+	{
+		private readonly TimeController _fpsController = new TimeController(TimeSpan.FromSeconds(1));
+		private readonly TimeController _upsController = new TimeController(TimeSpan.FromSeconds(1));
 
-        private int _fpsCounter = 0;
-        private int _upsCounter = 0;
+		private int _fpsCounter = 0;
+		private int _upsCounter = 0;
 
-        protected ILifetimeScope Container { get; private set; }
-        protected IContentAccess ContentAccess { get; private set; }
-        protected IDrawerManager DrawerManager { get; private set; }
+		public int FPS { get; private set; }
+		public int UPS { get; private set; }
 
-        public int FPS { get; private set; }
-        public int UPS { get; private set; }
+		public GameContext(ITextureGenerator textureManager)
+		{
+			Envir.Game = this;
+			Envir.Device = new GraphicsDeviceManager(this);
+			Envir.TextureGenerator = textureManager;
 
-        public GameContext(ILifetimeScope container)
-        {
-            Envir.Game = this;
-
-            Content.RootDirectory = "Content";
-            Container = container ?? throw new ArgumentNullException(nameof(container));
-            IsFixedTimeStep = Config.FPSCap;
-            MyraEnvironment.Game = this;
+			Content.RootDirectory = "Content";
+			IsFixedTimeStep = Config.FPSCap;
+			MyraEnvironment.Game = this;
 
 #if WINDOWS || LINUX
-            IsMouseVisible = true;
-            Window.TextInput += Window_TextInput;
+			IsMouseVisible = true;
+			Window.TextInput += Window_TextInput;
 #endif
-        }
+		}
 
 #if WINDOWS || LINUX
-        private void Window_TextInput(object sender, TextInputEventArgs e)
-        {
-            Desktop.OnChar(e.Character);
-        }
+		private void Window_TextInput(object sender, TextInputEventArgs e)
+		{
+			Desktop.OnChar(e.Character);
+		}
 #endif
 
-        protected override void LoadContent()
-        {
-            Desktop.HasExternalTextInput = true;
+		protected override void LoadContent()
+		{
+			Desktop.HasExternalTextInput = true;
+			DrawerManager.Load();
+			Fonts.Load(Content);
+			SceneManager.Load(new SplashScene(), throwException: false);
 
-            ContentAccess = Container.Resolve<IContentAccess>();
-            DrawerManager = Container.Resolve<IDrawerManager>();
+			base.LoadContent();
+		}
 
-            ContentAccess.LoadContent();
+		protected override void Initialize()
+		{
+			base.Initialize();
+		}
 
-            Fonts.Instance.Load(Content);
-            SceneManager.Instance.Load(new SplashScene(), throwException: false);
+		protected override void Update(GameTime gameTime)
+		{
+			Envir.Time = gameTime;
 
-            base.LoadContent();
-        }
+			if (_upsController.CheckProcess())
+			{
+				UPS = _upsCounter;
+				_upsCounter = 0;
+			}
 
-        protected override void Initialize()
-        {
-            base.Initialize();
-        }
+			if (_fpsController.CheckProcess())
+			{
+				FPS = _fpsCounter;
+				_fpsCounter = 0;
+			}
 
-        protected override void Update(GameTime gameTime)
-        {
-            Envir.Time = gameTime;
+			try
+			{
+				Desktop.UpdateInput();
+				Desktop.UpdateLayout();
 
-            if (_upsController.CheckProcess())
-            {
-                UPS = _upsCounter;
-                _upsCounter = 0;
-            }
+				SceneManager.Active?.Update();
+			}
+			catch (SceneChangedException)
+			{
+				SceneManager.Active?.Update();
+			}
 
-            if (_fpsController.CheckProcess())
-            {
-                FPS = _fpsCounter;
-                _fpsCounter = 0;
-            }
+			base.Update(gameTime);
+			_upsCounter++;
+		}
 
-            try
-            {
-                SceneManager.Instance.Active?.Update();
-            }
-            catch (SceneChangedException)
-            {
-                SceneManager.Instance.Active?.Update();
-            }
+		protected override void Draw(GameTime gameTime)
+		{
+			WidgetAnimation.Time = gameTime;
 
-            base.Update(gameTime);
-            _upsCounter++;
-        }
+			DrawerManager.Clear(Color.Black);
 
-        protected override void Draw(GameTime gameTime)
-        {
-            WidgetAnimation.Time = gameTime;
+			Desktop.RenderVisual();
 
-            DrawerManager.Clear(Color.Black);
+			var debugLabel = $"FPS: {FPS} - UPS: {UPS}";
 
-            Desktop.Render();
+			using (var ctx = DrawerManager.PrepareSpriteBatch())
+				ctx.Instance.DrawString(Fonts.Size8, debugLabel, new Vector2(10, 10), Color.White);
 
-            var debugLabel = $"FPS: {FPS} - UPS: {UPS}";
+			base.Draw(gameTime);
 
-            using (var ctx = DrawerManager.PrepareSpriteBatch())
-                ctx.Instance.DrawString(ContentAccess.Fonts[FontType.Normal], debugLabel, new Vector2(10, 10), Color.White);
-
-            base.Draw(gameTime);
-
-            _fpsCounter++;
-        }
-    }
+			_fpsCounter++;
+		}
+	}
 }

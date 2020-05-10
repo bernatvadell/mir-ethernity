@@ -16,6 +16,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)GameBuilder.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GameContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Config.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ITextureGenerator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\Context.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\FontType.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\KeyEventArgs.cs" />
@@ -31,17 +32,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Login\LoginBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Login\LoginScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Splash\SplashScene.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\Default\ContentAccess.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\Default\DrawerManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\Default\LibraryResolver.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\Default\RenderTargetManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DrawerManager.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LibraryResolver.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)RenderTargetManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)SceneManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\IAssetLoader.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\IContentAccess.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\IDrawerManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\ILibraryResolver.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\IRenderTargetManager.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Services\ITextureGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />

@@ -45,13 +45,9 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\AssetLoader.cs" />
     <Compile Include="Services\TextureGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Autofac, Version=5.1.3.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <HintPath>..\packages\Autofac.5.1.3\lib\net461\Autofac.dll</HintPath>
-    </Reference>
     <Reference Include="info.lundin.math, Version=1.2.6.0, Culture=neutral, PublicKeyToken=2f7fe9ec5efab85f, processorArchitecture=MSIL">
       <HintPath>..\..\packages\info.lundin.math.dll.1.2.6\lib\net40\info.lundin.math.dll</HintPath>
     </Reference>

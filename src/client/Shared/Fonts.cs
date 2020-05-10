@@ -6,13 +6,11 @@ using System.Text;
 
 namespace Mir.Client
 {
-    public class Fonts
+    public static class Fonts
     {
-        public static Fonts Instance = new Fonts();
+        public static SpriteFont Size8 { get; set; }
 
-        public SpriteFont Size8 { get; set; }
-
-        public void Load(ContentManager content)
+        public static void Load(ContentManager content)
         {
             Size8 = content.Load<SpriteFont>("fonts/normal");
         }

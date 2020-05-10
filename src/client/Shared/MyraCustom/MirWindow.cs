@@ -324,6 +324,7 @@ namespace Mir.Client.MyraCustom
 		public override void UpdateLayout()
 		{
 			base.UpdateLayout();
+
 			if (!_isWindowPlaced)
 			{
 				CenterOnContainer();
@@ -416,10 +417,6 @@ namespace Mir.Client.MyraCustom
 
 		public static MirWindow ShowDialog(string title, string body)
 		{
-			var lines = body.Split('\n');
-			var content = new VerticalStackPanel();
-			foreach (var line in lines) content.Widgets.Add(new Label { Text = line, HorizontalAlignment = HorizontalAlignment.Center });
-
 			var footer = new HorizontalStackPanel
 			{
 				VerticalAlignment = VerticalAlignment.Center,
@@ -431,8 +428,13 @@ namespace Mir.Client.MyraCustom
 			var window = new MirWindow
 			{
 				Title = title,
-				InnerContent = content,
-				FooterContent = footer
+				Width = 300,
+				InnerContent = new Label
+				{
+					Text = body,
+					Wrap = true,
+				},
+				FooterContent = footer,
 			};
 
 			cancelButton.Click += (s, e) => window.Close();
