@@ -4,6 +4,7 @@ using Mir.GameServer.Models;
 using Npgsql;
 using SqlKata;
 using SqlKata.Compilers;
+using SqlKata.Execution;
 using SqlKata.Extensions;
 using System;
 using System.Collections.Generic;
@@ -16,24 +17,19 @@ namespace Repository.SqlKata
 {
     public class AccountRepository : IAccountRepository
     {
-        private IDbConnection _db;
-        private Compiler _compiler;
+        private QueryFactory _db;
 
-        public AccountRepository(IDbConnection db, Compiler compiler)
+        public AccountRepository(QueryFactory db)
         {
             _db = db;
-            _compiler = compiler;
         }
 
         public async Task<Account> FindByUsername(string username)
         {
-            var query = new Query("user.account")
+           return await _db.Query("user.account")
                 .Select("id", "username", "email", "password")
-                .Where(new { username });
-
-            var result = _compiler.Compile(query);
-
-            return await _db.QueryFirstOrDefaultAsync<Account>(result.Sql, result.NamedBindings);
+                .Where(new { username })
+                .FirstOrDefaultAsync<Account>();
         }
     }
 }
