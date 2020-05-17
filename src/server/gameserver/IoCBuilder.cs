@@ -8,6 +8,8 @@ using Mir.GameServer.Services.PacketProcessor;
 using Mir.Network;
 using Mir.Network.TCP;
 using Npgsql;
+using Repository;
+using Repository.PGSQL;
 using System;
 using System.Data.Common;
 using System.Net;
@@ -39,7 +41,7 @@ namespace Mir.GameServer
             builder.Register((c) =>
             {
                 return new NpgsqlConnection(PostgreSQLConnectionString);
-            }).As<DbConnection>().SingleInstance();
+            }).As<NpgsqlConnection>().As<DbConnection>().SingleInstance();
 
             builder.Register((c) =>
             {
@@ -65,6 +67,8 @@ namespace Mir.GameServer
                 .AsClosedTypesOf(typeof(PacketProcess<>))
                 .SingleInstance();
 
+
+            builder.RegisterType<AccountRepository>().As<IAccountRepository>().SingleInstance();
 
             return builder.Build();
         }
