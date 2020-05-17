@@ -1,4 +1,5 @@
-﻿using ProtoBuf;
+﻿using Mir.Models;
+using ProtoBuf;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -18,5 +19,8 @@ namespace Mir.Packets.Server
     {
         [ProtoMember(1)]
         public LoginResultEnum Result { get; set; }
+
+        [ProtoMember(2)]
+        public IEnumerable<Character> Characters { get; set; }
     }
 }

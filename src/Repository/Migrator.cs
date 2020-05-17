@@ -14,9 +14,9 @@ namespace Repository
 {
     public class Migrator
     {
-        public static void Execute(string connectionString)
+        public static void Execute(ProviderType providerType, string connectionString)
         {
-            var serviceProvider = CreateServices(connectionString);
+            var serviceProvider = CreateServices(providerType, connectionString);
 
             using (var scope = serviceProvider.CreateScope())
             {
@@ -28,14 +28,26 @@ namespace Repository
         /// <summary>
         /// Configure the dependency injection services
         /// </summary>
-        private static IServiceProvider CreateServices(string connectionString)
+        private static IServiceProvider CreateServices(ProviderType providerType, string connectionString)
         {
             return new ServiceCollection()
                 .AddFluentMigratorCore()
                 .ConfigureRunner(rb =>
                 {
-                    rb.AddPostgres()
-                      .WithGlobalConnectionString(connectionString)
+                    switch (providerType)
+                    {
+                        case ProviderType.PostgreSQL:
+                            rb.AddPostgres();
+                            break;
+                        case ProviderType.MySQL:
+                            rb.AddMySql5();
+                            break;
+                        case ProviderType.SqlServer:
+                            rb.AddSqlServer();
+                            break;
+                    }
+
+                    rb.WithGlobalConnectionString(connectionString)
                       .ScanIn(typeof(CreateSchemaUser).Assembly).For.Migrations();
                 })
                 .AddLogging(lb => lb.AddFluentMigratorConsole())

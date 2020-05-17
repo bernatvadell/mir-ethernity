@@ -1,7 +1,9 @@
-﻿using Mir.Packets;
+﻿using Mir.Models;
+using Mir.Packets;
 using Mir.Packets.Gate;
 using Mir.Packets.Server;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Mir.GameServer.Models
@@ -22,6 +24,9 @@ namespace Mir.GameServer.Models
         }
 
         public Stage Stage { get; set; } = Stage.Login;
+        public Account Account { get; set; }
+        public IEnumerable<Character> Characters { get; set; }
+
         public GateConnection GateConnection { get; }
         public int SocketHandle { get; }
 

@@ -53,6 +53,7 @@ namespace Mir.GameServer
             var pass = Env.GetString("DB_PASS");
             var port = Env.GetInt("DB_PORT");
             var db = Env.GetString("DB_DATABASE");
+            var connectionString = string.Empty;
 
             if (!Enum.TryParse(providerTypeStr, out ProviderType providerType))
                 throw new ApplicationException($"Unknown DB_PROVIDER type");
@@ -60,23 +61,32 @@ namespace Mir.GameServer
             switch (providerType)
             {
                 case ProviderType.PostgreSQL:
+                    connectionString = $"Host={host};Port={port};Username={user};Password={pass};Database={db}";
                     builder.RegisterType<PostgresCompiler>().As<Compiler>().SingleInstance();
-                    builder.Register((c) => new NpgsqlConnection($"Host={host};Port={port};Username={user};Password={pass};Database={db}"))
+                    builder.Register((c) => new NpgsqlConnection(connectionString))
                         .As<IDbConnection>().SingleInstance();
                     break;
                 case ProviderType.SqlServer:
+                    connectionString = $"User ID={user};Password={pass};Initial Catalog={db};Server={host};Port={port}";
                     builder.RegisterType<SqlServerCompiler>().As<Compiler>().SingleInstance();
-                    builder.Register((c) => new SqlConnection($"User ID={user};Password={pass};Initial Catalog={db};Server={host};Port={port}"))
+                    builder.Register((c) => new SqlConnection(connectionString))
                         .As<IDbConnection>().SingleInstance();
                     break;
                 case ProviderType.MySQL:
+                    connectionString = $"database={0};server={host};port={port};user id={user};Password={pass}";
                     builder.RegisterType<MySqlCompiler>().As<Compiler>().SingleInstance();
-                    builder.Register((c) => new MySqlConnection($"database={0};server={host};port={port};user id={user};Password={pass}"))
+                    builder.Register((c) => new MySqlConnection(connectionString))
                         .As<IDbConnection>().SingleInstance();
                     break;
                 default:
                     throw new NotImplementedException();
             }
+
+            builder.RegisterInstance(new DatabaseOptions
+            {
+                ConnectionString = connectionString,
+                Provider = providerType
+            });
 
             builder.RegisterType<QueryFactory>();
         }
@@ -120,6 +130,7 @@ namespace Mir.GameServer
         private static void RegisterRepositories(ContainerBuilder builder)
         {
             builder.RegisterType<AccountRepository>().As<IAccountRepository>().SingleInstance();
+            builder.RegisterType<CharacterRepository>().As<ICharacterRepository>().SingleInstance();
         }
 
         public static IContainer BuildContainer()

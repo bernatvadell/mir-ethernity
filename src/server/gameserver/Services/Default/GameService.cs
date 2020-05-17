@@ -24,7 +24,8 @@ namespace Mir.GameServer.Services.Default
         private readonly GameState _state;
         private readonly IListener _listener;
         private readonly PacketProcessExecutor _packetProcessExecutor;
-        private readonly DbConnection _db;
+        private readonly IDbConnection _db;
+        private readonly DatabaseOptions _dbOptions;
         private bool _executedMigrations = false;
 
         public ConcurrentDictionary<int, GateConnection> Gates { get; } = new ConcurrentDictionary<int, GateConnection>();
@@ -35,7 +36,8 @@ namespace Mir.GameServer.Services.Default
             GameState state,
             PacketProcessExecutor packetProcessExecutor,
             IEnumerable<ILoopTask> loopTasks,
-            DbConnection dbConnection
+            IDbConnection dbConnection,
+            DatabaseOptions dbOptions
         )
         {
             _logger = logger;
@@ -49,6 +51,7 @@ namespace Mir.GameServer.Services.Default
             _listener = listener ?? throw new ArgumentNullException(nameof(listener));
             _packetProcessExecutor = packetProcessExecutor ?? throw new ArgumentNullException(nameof(packetProcessExecutor));
             _db = dbConnection ?? throw new ArgumentNullException(nameof(dbConnection));
+            _dbOptions = dbOptions ?? throw new ArgumentNullException(nameof(dbOptions));
 
             _listener.OnClientConnect += Listener_OnClientConnect;
             _listener.OnClientData += Listener_OnClientData;
@@ -124,7 +127,7 @@ namespace Mir.GameServer.Services.Default
                 if (!_executedMigrations) RunMigrations();
 
                 _logger.LogInformation("Connecting to database...");
-                await _db.OpenAsync(cancellationToken);
+                _db.Open();
                 _logger.LogInformation("Connected to database");
             }
             catch (Exception ex)
@@ -138,7 +141,7 @@ namespace Mir.GameServer.Services.Default
         private void RunMigrations()
         {
             _logger.LogInformation("Running migrations...");
-            // Migrator.Execute(IoCBuilder.PostgreSQLConnectionString);
+            Migrator.Execute(_dbOptions.Provider, _dbOptions.ConnectionString);
             _logger.LogInformation("Migrations updated");
             _executedMigrations = true;
         }
