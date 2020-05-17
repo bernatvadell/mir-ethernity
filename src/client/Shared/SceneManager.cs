@@ -19,7 +19,6 @@ namespace Mir.Client
             Active = scene;
             Desktop.Root = Active;
             Active.Load();
-            if (throwException) throw new SceneChangedException();
         }
     }
 }

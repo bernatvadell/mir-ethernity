@@ -1,4 +1,5 @@
 ﻿using Mir.Client.MyraCustom;
+using Mir.Client.Scenes.Characters;
 using Mir.Packets.Server;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,9 @@ namespace Mir.Client.Network.Processors
             {
                 case LoginResultEnum.BadUsernameOrPassword:
                     MirWindow.ShowDialog("Login", "Your username or password are not correct");
+                    break;
+                case LoginResultEnum.Succcess:
+                    SceneManager.Load(new CharacterScene());
                     break;
             }
         }

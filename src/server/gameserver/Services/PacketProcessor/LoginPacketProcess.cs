@@ -23,9 +23,14 @@ namespace Mir.GameServer.Services.PacketProcessor
         public override async Task Process(ClientState client, Login packet)
         {
             var account = await _accountRepository.FindByUsername(packet.Username);
+
             if (account == null || !BCrypt.Net.BCrypt.Verify(packet.Password, account.Password))
             {
                 await client.Send(new LoginResult { Result = LoginResultEnum.BadUsernameOrPassword });
+            }
+            else
+            {
+                await client.Send(new LoginResult { Result = LoginResultEnum.Succcess });
             }
         }
     }
