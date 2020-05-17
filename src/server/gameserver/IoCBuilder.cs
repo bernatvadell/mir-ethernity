@@ -11,6 +11,8 @@ using Mir.Network.TCP;
 using Npgsql;
 using Repository;
 using Repository.PGSQL;
+using Repository.SqlKata;
+using SqlKata.Compilers;
 using System;
 using System.Data.Common;
 using System.Net;
@@ -39,10 +41,12 @@ namespace Mir.GameServer
                 .As(typeof(ILogger<>))
                 .SingleInstance();
 
+            builder.RegisterType<PostgresCompiler>().As<Compiler>().SingleInstance();
+
             builder.Register((c) =>
             {
                 return new NpgsqlConnection(PostgreSQLConnectionString);
-            }).As<NpgsqlConnection>().As<DbConnection>().SingleInstance();
+            }).As<DbConnection>().SingleInstance();
 
             builder.Register((c) =>
             {
