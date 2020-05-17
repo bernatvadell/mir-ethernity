@@ -1,4 +1,5 @@
-﻿using Mir.GameServer.Services.Default;
+﻿using Mir.GameServer.Models;
+using Mir.GameServer.Services.Default;
 using System;
 using System.Collections.Generic;
 using System.Text;

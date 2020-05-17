@@ -26,6 +26,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)MyraCustom\MirImageBrush.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MyraCustom\MirWidget.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MyraCustom\WidgetAnimation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Network\NetworkManager.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Primitive2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\BaseScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Login\LoginBox.cs" />
@@ -41,5 +42,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)Content\Content.mgcb" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Network\Processors\" />
   </ItemGroup>
 </Project>

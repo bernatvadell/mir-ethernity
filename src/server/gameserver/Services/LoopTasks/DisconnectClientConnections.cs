@@ -1,4 +1,5 @@
-﻿using Mir.GameServer.Services.Default;
+﻿using Mir.GameServer.Models;
+using Mir.GameServer.Services.Default;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,7 +17,7 @@ namespace Mir.GameServer.Services.LoopTasks
 			{
 				if (client.GateConnection.Connection.Connected)
 				{
-
+					// state.GateMessages
 				}
 				client.GateConnection.Clients.Remove(client.SocketHandle);
 			}

@@ -1,63 +1,72 @@
 ﻿using Autofac;
 using DotNetEnv;
 using Microsoft.Extensions.Logging;
+using Mir.GameServer.Models;
 using Mir.GameServer.Services;
 using Mir.GameServer.Services.Default;
 using Mir.GameServer.Services.PacketProcessor;
 using Mir.Network;
 using Mir.Network.TCP;
+using Npgsql;
 using System;
-using System.Collections.Generic;
+using System.Data.Common;
 using System.Net;
 using System.Reflection;
-using System.Text;
 
 namespace Mir.GameServer
 {
-	public static class IoCBuilder
-	{
-		public static IContainer BuildContainer()
-		{
-			var loggerFactory = LoggerFactory.Create((configure) =>
-			{
-				configure
-					.SetMinimumLevel(Enum.Parse<LogLevel>(Env.GetString("LOG_LEVEL", "Debug")))
-					.AddConsole();
-			});
+    public static class IoCBuilder
+    {
+        public static string PostgreSQLConnectionString = $"Host={Env.GetString("PG_HOST")};Port={Env.GetString("Port")};Username={Env.GetString("PG_USER")};Password={Env.GetString("PG_PASS")};Database={Env.GetString("PG_DB")}";
 
-			var builder = new ContainerBuilder();
+        public static IContainer BuildContainer()
+        {
+            var loggerFactory = LoggerFactory.Create((configure) =>
+            {
+                configure
+                    .SetMinimumLevel(Enum.Parse<LogLevel>(Env.GetString("LOG_LEVEL", "Debug")))
+                    .AddConsole();
+            });
 
-			builder.RegisterInstance(loggerFactory).As<ILoggerFactory>().SingleInstance();
+            var builder = new ContainerBuilder();
 
-			builder.RegisterGeneric(typeof(Logger<>))
-				.As(typeof(ILogger<>))
-				.SingleInstance();
+            builder.RegisterInstance(loggerFactory).As<ILoggerFactory>().SingleInstance();
 
-			builder.Register((c) =>
-			{
-				var tcpIP = Env.GetString("GS_IP", "0.0.0.0");
-				var tcpPORT = Env.GetString("GS_PORT", "7000");
+            builder.RegisterGeneric(typeof(Logger<>))
+                .As(typeof(ILogger<>))
+                .SingleInstance();
 
-				if (!IPAddress.TryParse(tcpIP, out IPAddress address))
-					throw new ApplicationException($"Invalid config value for GATE_IP");
+            builder.Register((c) =>
+            {
+                return new NpgsqlConnection(PostgreSQLConnectionString);
+            }).As<DbConnection>().SingleInstance();
 
-				if (!ushort.TryParse(tcpPORT, out ushort port) || port == 0 || port > ushort.MaxValue)
-					throw new ApplicationException($"Invalid config value for GATE_PORT");
+            builder.Register((c) =>
+            {
+                var tcpIP = Env.GetString("GS_IP", "0.0.0.0");
+                var tcpPORT = Env.GetString("GS_PORT", "7000");
 
-				return new TCPNetworkListenerOptions { ListenIP = address, ListenPort = port, Source = Packets.PacketSource.Gate };
-			}).SingleInstance();
+                if (!IPAddress.TryParse(tcpIP, out IPAddress address))
+                    throw new ApplicationException($"Invalid config value for GATE_IP");
 
-			builder.RegisterType<TCPConnection>().InstancePerDependency();
-			builder.RegisterType<TCPNetworkListener>().As<IListener>().SingleInstance();
-			builder.RegisterType<GameState>().As<IService>().SingleInstance();
-			builder.RegisterType<GameService>().As<IService>().SingleInstance();
+                if (!ushort.TryParse(tcpPORT, out ushort port) || port == 0 || port > ushort.MaxValue)
+                    throw new ApplicationException($"Invalid config value for GATE_PORT");
 
-			builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
-				.AsClosedTypesOf(typeof(PacketProcess<>))
-				.SingleInstance();
+                return new TCPNetworkListenerOptions { ListenIP = address, ListenPort = port, Source = Packets.PacketSource.Gate };
+            }).SingleInstance();
+
+            builder.RegisterType<PacketProcessExecutor>().SingleInstance();
+            builder.RegisterType<TCPConnection>().InstancePerDependency();
+            builder.RegisterType<TCPNetworkListener>().As<IListener>().SingleInstance();
+            builder.RegisterType<GameState>().SingleInstance();
+            builder.RegisterType<GameService>().As<IService>().SingleInstance();
+
+            builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
+                .AsClosedTypesOf(typeof(PacketProcess<>))
+                .SingleInstance();
 
 
-			return builder.Build();
-		}
-	}
+            return builder.Build();
+        }
+    }
 }

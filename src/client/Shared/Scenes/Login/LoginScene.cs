@@ -99,16 +99,7 @@ namespace Mir.Client.Scenes.Login
 
 		public override void Load()
 		{
-			Envir.Client?.Disconnect();
-
-			Envir.Client = new TCPNetworkClient(new TCPNetworkClientOptions
-			{
-				ServerIP = IPAddress.Parse(Config.ServerIP),
-				ServerPort = Config.Port,
-				Source = PacketSource.Server
-			});
-
-			Envir.Client.OnDisconnect += Envir.OnLostConnection;
+			Envir.Network.PrepareConnection();
 
 			_loginBox.Visible = false;
 			_window = MirWindow.ShowDialog("Loading", $"Trying connect to server\nAttemps: {_attemps}");
@@ -116,7 +107,7 @@ namespace Mir.Client.Scenes.Login
 
 		public override void Update()
 		{
-			if (!_connecting && !Envir.Client.Connected && _reconnectController.CheckProcess())
+			if (!_connecting && !Envir.Network.Client.Connected && _reconnectController.CheckProcess())
 				TryConnect();
 		}
 
@@ -129,7 +120,7 @@ namespace Mir.Client.Scenes.Login
 
 			try
 			{
-				await Envir.Client.Connect();
+				await Envir.Network.Client.Connect();
 
 				_window.Visible = false;
 				_loginBox.Visible = true;

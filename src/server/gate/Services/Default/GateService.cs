@@ -3,6 +3,7 @@ using Mir.Network;
 using Mir.Packets.Gate;
 using Mir.Packets.Server;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,7 @@ namespace Mir.GateServer.Services.Default
 {
     public class GateService : IService
     {
+        private ConcurrentDictionary<int, IConnection> _connections;
         private readonly ILogger<GateService> _logger;
         private readonly IClient _serverClient;
         private readonly IListener _listener;
@@ -30,11 +32,32 @@ namespace Mir.GateServer.Services.Default
             _listener.OnClientConnect += Listener_OnClientConnect;
             _listener.OnClientDisconnect += Listener_OnClientDisconnect;
             _listener.OnClientData += Listener_OnClientData;
+
+            _connections = new ConcurrentDictionary<int, IConnection>();
         }
 
         private void ServerClient_OnData(object sender, Packets.Packet e)
         {
+            switch (e)
+            {
+                case ClientPacket cp:
+                    ProcessClientPacket(cp);
+                    break;
+                default:
+                    _logger.LogWarning("Received from gameserver unknown packet: {0}", e.GetType().Name);
+                    break;
+            }
+        }
 
+        private async void ProcessClientPacket(ClientPacket cp)
+        {
+            if (!_connections.TryGetValue(cp.SocketHandle, out IConnection connection))
+            {
+                await _serverClient.Send(new ClientConnectionChanged() { Connected = false, SocketHandle = cp.SocketHandle });
+                return;
+            }
+
+            await connection.Send(cp.Packet);
         }
 
         private async void ServerClient_OnDisconnect(object sender, EventArgs e)
@@ -51,13 +74,15 @@ namespace Mir.GateServer.Services.Default
             TryConnectToGameServer();
         }
 
-        private void Listener_OnClientData(object sender, Message e)
+        private async void Listener_OnClientData(object sender, Message e)
         {
-            _serverClient.Send(new ClientPacket { SocketHandle = e.Connection.Handle, Packet = e.Packet });
+            await _serverClient.Send(new ClientPacket { SocketHandle = e.Connection.Handle, Packet = e.Packet });
         }
 
         private async void Listener_OnClientDisconnect(object sender, IConnection e)
         {
+            _logger.LogDebug("Client {0} disconnected", e.Handle);
+            _connections.TryRemove(e.Handle, out IConnection connection);
             await _serverClient.Send(new ClientConnectionChanged() { Connected = false, SocketHandle = e.Handle });
         }
 
@@ -67,7 +92,11 @@ namespace Mir.GateServer.Services.Default
             {
                 await e.Send(new Disconnect() { Reason = "Server is down" });
                 await e.Disconnect();
+                return;
             }
+
+            _connections.TryAdd(e.Handle, e);
+            _logger.LogDebug("Client {0} connected", e.Handle);
 
             await _serverClient.Send(new ClientConnectionChanged() { Connected = true, SocketHandle = e.Handle });
         }
@@ -83,6 +112,8 @@ namespace Mir.GateServer.Services.Default
 
         public async void TryConnectToGameServer()
         {
+            const int retrySeconds = 3;
+
             while (!_cancellationToken.IsCancellationRequested)
             {
                 _logger.LogInformation($"Trying to connect to game server");
@@ -94,10 +125,10 @@ namespace Mir.GateServer.Services.Default
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, $"Cant connect to game server, next try in 3 seconds...");
+                    _logger.LogError(ex, "Cant connect to game server, next try in {0} seconds...", retrySeconds);
                 }
 
-                await Task.Delay(TimeSpan.FromSeconds(3));
+                await Task.Delay(TimeSpan.FromSeconds(retrySeconds));
             }
         }
     }

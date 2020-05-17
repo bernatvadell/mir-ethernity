@@ -73,13 +73,13 @@ namespace Mir.Client.Scenes.Login
 			_exitButton.Click += ExitButton_Click;
 		}
 
-		private void LoginButton_Click(object sender, EventArgs e)
+		private async void LoginButton_Click(object sender, EventArgs e)
 		{
-			Envir.Client.Send(new Packets.Client.Login
+			await Envir.Network.Client.Send(new Packets.Client.Login
 			{
 				Username = _idField.Text,
 				Password = _passField.Text,
-			}).ConfigureAwait(false);
+			});
 		}
 
 		private void ExitButton_Click(object sender, EventArgs e)
