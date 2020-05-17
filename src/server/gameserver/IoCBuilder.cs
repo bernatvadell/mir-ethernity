@@ -47,6 +47,8 @@ namespace Mir.GameServer
 
         private static void RegisterDBProvider(ContainerBuilder builder)
         {
+            Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+
             var providerTypeStr = Env.GetString("DB_PROVIDER", "PostgreSQL");
             var host = Env.GetString("DB_HOST");
             var user = Env.GetString("DB_USER");

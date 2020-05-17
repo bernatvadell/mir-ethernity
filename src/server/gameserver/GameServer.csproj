@@ -5,6 +5,10 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>Mir.GameServer</RootNamespace>
   </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\..\build\server\</OutputPath>
+  </PropertyGroup>
   
   <ItemGroup>
     <PackageReference Include="autofac" Version="5.1.4" />

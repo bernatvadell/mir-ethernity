@@ -6,7 +6,7 @@ using System.Text;
 namespace Mir.Models
 {
     [ProtoContract]
-    public class MirClass
+    public class AttackMode
     {
         [ProtoMember(1)]
         public byte Id { get; set; }

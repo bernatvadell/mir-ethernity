@@ -12,12 +12,11 @@ namespace Repository.Migratoions
         {
             Create.Table("account")
                 .InSchema("user")
-                .WithColumn("id").AsInt32().PrimaryKey().Identity()
+                .WithColumn("id").AsInt32().PrimaryKey("pk_account").Identity()
                 .WithColumn("username").AsString(50).NotNullable().Unique("ux_account_username")
                 .WithColumn("email").AsString(500).NotNullable().Unique("ux_account_email")
                 .WithColumn("password").AsString(72).NotNullable()
                 .WithColumn("is_admin").AsBoolean().NotNullable().WithDefaultValue(false);
-
         }
 
         public override void Down()

@@ -6,6 +6,10 @@
     <RootNamespace>Mir.GateServer</RootNamespace>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <OutputPath>..\..\..\build\gate\</OutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="autofac" Version="5.1.4" />
     <PackageReference Include="DotNetEnv" Version="1.4.0" />
