@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 using FluentMigrator.Runner;
@@ -19,7 +20,8 @@ namespace Repository
 
             using (var scope = serviceProvider.CreateScope())
             {
-                UpdateDatabase(scope.ServiceProvider);
+                var runner = serviceProvider.GetRequiredService<IMigrationRunner>();
+                UpdateDatabase(runner);
             }
         }
 
@@ -43,10 +45,20 @@ namespace Repository
         /// <summary>
         /// Update the database
         /// </summary>
-        private static void UpdateDatabase(IServiceProvider serviceProvider)
+        private static void UpdateDatabase(IMigrationRunner runner, int attemps = 0)
         {
-            var runner = serviceProvider.GetRequiredService<IMigrationRunner>();
-            runner.MigrateUp();
+            try
+            {
+                runner.MigrateUp();
+            }
+            catch (Exception)
+            {
+                if (attemps < 3)
+                {
+                    Thread.Sleep(1000);
+                    UpdateDatabase(runner, attemps + 1);
+                }
+            }
         }
     }
 }

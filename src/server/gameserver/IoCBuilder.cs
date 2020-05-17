@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using Mir.GameServer.Models;
 using Mir.GameServer.Services;
 using Mir.GameServer.Services.Default;
+using Mir.GameServer.Services.LoopTasks;
 using Mir.GameServer.Services.PacketProcessor;
 using Mir.Network;
 using Mir.Network.TCP;
@@ -19,7 +20,7 @@ namespace Mir.GameServer
 {
     public static class IoCBuilder
     {
-        public static string PostgreSQLConnectionString = $"Host={Env.GetString("PG_HOST")};Port={Env.GetString("Port")};Username={Env.GetString("PG_USER")};Password={Env.GetString("PG_PASS")};Database={Env.GetString("PG_DB")}";
+        public static string PostgreSQLConnectionString = $"Host={Env.GetString("PG_HOST")};Port={Env.GetString("PG_PORT")};Username={Env.GetString("PG_USER")};Password={Env.GetString("PG_PASS")};Database={Env.GetString("PG_DB")}";
 
         public static IContainer BuildContainer()
         {
@@ -62,6 +63,11 @@ namespace Mir.GameServer
             builder.RegisterType<TCPNetworkListener>().As<IListener>().SingleInstance();
             builder.RegisterType<GameState>().SingleInstance();
             builder.RegisterType<GameService>().As<IService>().SingleInstance();
+
+            builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
+                 .AssignableTo<ILoopTask>()
+                 .As<ILoopTask>()
+                 .SingleInstance();
 
             builder.RegisterAssemblyTypes(Assembly.GetExecutingAssembly())
                 .AsClosedTypesOf(typeof(PacketProcess<>))

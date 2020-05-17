@@ -19,7 +19,7 @@ namespace Repository.PGSQL
 
         public async Task<Account> FindByUsername(string username)
         {
-            return await _db.QueryFirstOrDefaultAsync<Account>("select id,username,email,password from user.account WHERE username=@username", new { username });
+            return await _db.QueryFirstOrDefaultAsync<Account>("select id,username,email,password from \"user\".account WHERE username=@username", new { username });
         }
     }
 }

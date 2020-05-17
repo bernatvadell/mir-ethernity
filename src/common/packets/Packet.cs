@@ -26,7 +26,7 @@ namespace Mir.Packets
 	#endregion
 
 	#region Server Packets
-
+	[ProtoInclude((int)PacketIndex.LoginResult, typeof(LoginResult))]
 	#endregion
 	public abstract class Packet
 	{

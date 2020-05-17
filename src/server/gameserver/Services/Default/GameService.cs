@@ -20,7 +20,7 @@ namespace Mir.GameServer.Services.Default
     public class GameService : IService
     {
         private readonly ILogger<GameService> _logger;
-        private readonly IDictionary<int, ILoopTask[]> _loopTasks;
+        private readonly Tuple<int, ILoopTask[]>[] _loopTasks;
         private readonly GameState _state;
         private readonly IListener _listener;
         private readonly PacketProcessExecutor _packetProcessExecutor;
@@ -39,7 +39,12 @@ namespace Mir.GameServer.Services.Default
         )
         {
             _logger = logger;
-            _loopTasks = loopTasks.GroupBy(x => x.Order)?.OrderBy(x => x.Key).ToDictionary(x => x.Key, x => x.ToArray()) ?? throw new ArgumentNullException(nameof(LoopTasks));
+            _loopTasks = loopTasks?
+                .GroupBy(x => x.Order)
+                .OrderBy(x => x.Key)
+                .Select(x => new Tuple<int, ILoopTask[]>(x.Key, x.ToArray()))
+                .ToArray() ?? throw new ArgumentNullException(nameof(LoopTasks));
+
             _state = state ?? throw new ArgumentNullException(nameof(state));
             _listener = listener ?? throw new ArgumentNullException(nameof(listener));
             _packetProcessExecutor = packetProcessExecutor ?? throw new ArgumentNullException(nameof(packetProcessExecutor));
@@ -52,19 +57,20 @@ namespace Mir.GameServer.Services.Default
 
         private void Listener_OnClientData(object sender, Message e)
         {
-            _state.GateMessages.Enqueue(e);
+            _state.IncommingPackets.Enqueue(e);
         }
 
-        private void Listener_OnClientDisconnect(object sender, IConnection e)
+        private async void Listener_OnClientDisconnect(object sender, IConnection e)
         {
-            if (_state.Gates.ContainsKey(e.Handle))
-                _state.DisconnectedGates.Enqueue(_state.Gates[e.Handle]);
+            if (_state.Gates.TryRemove(e.Handle, out GateConnection gate))
+                await gate.Disconnect();
         }
 
-        private void Listener_OnClientConnect(object sender, IConnection e)
+        private async void Listener_OnClientConnect(object sender, IConnection e)
         {
             var gate = new GateConnection(e);
-            _state.ConnectingGates.Enqueue(gate);
+            if (!_state.Gates.TryAdd(e.Handle, gate))
+                await e.Disconnect();
         }
 
         public async Task Run(CancellationToken cancellationToken = default)
@@ -91,12 +97,13 @@ namespace Mir.GameServer.Services.Default
                 if (_db.State != ConnectionState.Open)
                     await TryConnectToDB(cancellationToken);
 
-                for (var i = 0; i < _loopTasks.Count; i++)
+
+                for (var i = 0; i < _loopTasks.Length; i++)
                 {
                     var group = _loopTasks[i];
-                    var tasks = new Task[group.Length];
+                    var tasks = new Task[group.Item2.Length];
                     for (var t = 0; t < tasks.Length; t++)
-                        tasks[t] = group[t].Update(_state);
+                        tasks[t] = group.Item2[t].Update(_state);
                     await Task.WhenAll(tasks);
                 }
 
@@ -114,10 +121,11 @@ namespace Mir.GameServer.Services.Default
             const int RETRY_CONNECTION_SECONDS = 3;
             try
             {
+                if (!_executedMigrations) RunMigrations();
+
                 _logger.LogInformation("Connecting to database...");
                 await _db.OpenAsync(cancellationToken);
                 _logger.LogInformation("Connected to database");
-                if (!_executedMigrations) RunMigrations();
             }
             catch (Exception ex)
             {

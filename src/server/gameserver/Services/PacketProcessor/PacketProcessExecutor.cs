@@ -1,4 +1,5 @@
 ﻿using Autofac;
+using Mir.GameServer.Models;
 using Mir.Network;
 using Mir.Packets;
 using System;
@@ -9,26 +10,31 @@ using System.Threading.Tasks;
 
 namespace Mir.GameServer.Services.PacketProcessor
 {
-	public class PacketProcessExecutor
-	{
-		private readonly ILifetimeScope _scope;
-		private readonly Type _baseType;
-		private readonly MethodInfo _processMethod;
+    public class PacketProcessExecutor
+    {
+        private readonly ILifetimeScope _scope;
+        private readonly Type _baseType;
 
-		public PacketProcessExecutor(ILifetimeScope scope)
-		{
-			_scope = scope;
-			_baseType = typeof(PacketProcess<>);
-			_processMethod = _baseType.GetMethod(nameof(PacketProcess<Packet>.Process));
-		}
+        public PacketProcessExecutor(ILifetimeScope scope)
+        {
+            _scope = scope;
+            _baseType = typeof(PacketProcess<>);
+        }
 
-		public async Task Execute(IConnection connection, Packet packet)
-		{
-			var packetType = packet.GetType();
-			var executor = _scope.Resolve(_baseType.MakeGenericType(packetType));
-			var method = _processMethod.MakeGenericMethod(packetType);
-			var task = (Task)method.Invoke(executor, new object[] { connection, packet });
-			await task;
-		}
-	}
+        public async Task Execute(ClientState client, Packet packet)
+        {
+            var packetType = packet.GetType();
+            var processorType = _baseType.MakeGenericType(packetType);
+            
+            if (!_scope.IsRegistered(processorType))
+                return;
+
+            var processMethod = processorType.GetMethod("Process");
+
+            var executor = _scope.Resolve(processorType);
+
+            var task = (Task)processMethod.Invoke(executor, new object[] { client, packet });
+            await task;
+        }
+    }
 }
