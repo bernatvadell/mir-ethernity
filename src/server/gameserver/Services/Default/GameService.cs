@@ -138,7 +138,7 @@ namespace Mir.GameServer.Services.Default
         private void RunMigrations()
         {
             _logger.LogInformation("Running migrations...");
-            Migrator.Execute(IoCBuilder.PostgreSQLConnectionString);
+            // Migrator.Execute(IoCBuilder.PostgreSQLConnectionString);
             _logger.LogInformation("Migrations updated");
             _executedMigrations = true;
         }

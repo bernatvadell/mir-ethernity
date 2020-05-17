@@ -14,13 +14,15 @@ namespace Mir.GameServer.Services.PacketProcessor
     public class LoginPacketProcess : PacketProcess<Login>
     {
         private IAccountRepository _accountRepository;
+        
+        public override Stage Stage => Stage.Login;
 
         public LoginPacketProcess(IAccountRepository accountRepository)
         {
             _accountRepository = accountRepository ?? throw new ArgumentNullException(nameof(accountRepository));
         }
 
-        public override async Task Process(ClientState client, Login packet)
+        protected override async Task ProcessPacket(ClientState client, Login packet)
         {
             var account = await _accountRepository.FindByUsername(packet.Username);
 

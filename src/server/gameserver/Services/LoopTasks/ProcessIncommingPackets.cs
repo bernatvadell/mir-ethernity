@@ -53,12 +53,12 @@ namespace Mir.GameServer.Services.LoopTasks
         {
             if (packet.Connected)
             {
-                gate.Clients.TryAdd(packet.SocketHandle, new ClientState(state, gate, packet.SocketHandle));
+                gate.Clients.TryAdd(packet.SocketHandle, new ClientState(gate, packet.SocketHandle));
             }
             else
             {
                 if (gate.Clients.TryRemove(packet.SocketHandle, out ClientState client))
-                    await client.Disconnect();
+                    await client.Disconnect("Client disconnection");
             }
         }
     }

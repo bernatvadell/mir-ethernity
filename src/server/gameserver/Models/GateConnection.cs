@@ -20,7 +20,9 @@ namespace Mir.GameServer.Models
         public async Task Disconnect()
         {
             foreach (var client in Clients)
-                await client.Value.Disconnect();
+                await client.Value.Disconnect("Game server shutdown");
+
+            await Connection.Disconnect();
         }
     }
 }
