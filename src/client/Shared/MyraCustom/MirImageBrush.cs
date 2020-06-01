@@ -20,7 +20,8 @@ namespace Mir.Client.MyraCustom
         private int _index;
         private bool _validTexture = false;
         private Texture2D _texture;
-
+        private Point _size;
+        private Point _textureSize;
 
         public event EventHandler<IImage> ImageChanged;
         public IImage Image { get; private set; }
@@ -60,7 +61,7 @@ namespace Mir.Client.MyraCustom
 
         public Rectangle? SourceRectangle { get; set; }
 
-        public Point Size => Image == null ? Point.Zero : new Point(Image.Width, Image.Height);
+        public Point Size => _size;
         public bool Blend { get; set; }
 
 
@@ -96,7 +97,7 @@ namespace Mir.Client.MyraCustom
 
             if (UseOffset) dest.Offset(Image.OffsetX, Image.OffsetY);
 
-            batch.Draw(_texture, dest, SourceRectangle, color);
+            batch.Draw(_texture, new Rectangle(dest.Location, _textureSize), SourceRectangle, color);
 
             if (Blend)
             {
@@ -118,6 +119,9 @@ namespace Mir.Client.MyraCustom
 
             _validTexture = false;
             Image = image;
+
+            _size = Image == null ? Point.Zero : new Point(Image.Width + (4 - Image.Width % 4) % 4, Image.Height + (4 - Image.Height % 4) % 4);
+            _textureSize = new Point(_size.X + (4 - _size.X % 4) % 4, _size.Y + (4 - _size.Y % 4) % 4);
 
             ImageChanged?.Invoke(this, image);
         }

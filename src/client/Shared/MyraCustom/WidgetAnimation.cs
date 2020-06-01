@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Myra.Graphics2D.UI;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -12,30 +13,91 @@ namespace Mir.Client.MyraCustom
 
         private TimeSpan _nextTick;
 
-        public Action<MirWidget, int> Callback { get; }
-        public bool Loop { get; }
-        public MirWidget Self { get; }
-        public bool Enabled { get; set; }
-        public int From { get; }
-        public int To { get; }
-        public TimeSpan Elapse { get; }
-        public TimeSpan ElapsePerFrame { get; }
-        public int Current { get; private set; }
+        public Action<MirWidget, int> Callback { get; private set; }
+        public Action<MirWidget> EndCallback { get; private set; }
+        public bool Loop { get; private set; }
+        public MirWidget Self { get; private set; }
+        public bool Enabled { get; private set; }
+        public int CountIndex { get; private set; }
+        public int FromIndex { get; private set; }
+        public int ToIndex { get; private set; }
+        public TimeSpan ElapseSpan { get; private set; }
+        public TimeSpan ElapsePerFrame { get; private set; }
+        public int CurrentIndex { get; private set; }
 
-        public WidgetAnimation(Action<MirWidget, int> callback, MirWidget self, int from, int to, TimeSpan elapse, bool loop)
+
+        private WidgetAnimation()
         {
             Enabled = true;
-
-            Self = self;
-            From = from;
-            To = to;
-            Elapse = elapse;
-            ElapsePerFrame = TimeSpan.FromTicks(elapse.Ticks / (to - from));
-            Callback = callback;
-            Loop = loop;
-
-            Reset();
+            Self = null;
+            FromIndex = 0;
+            ToIndex = 0;
+            ElapseSpan = TimeSpan.FromMilliseconds(120);
+            Callback = null;
+            Loop = false;
         }
+
+        public WidgetAnimation Attach(MirWidget widget)
+        {
+            Self = widget;
+            Reset();
+            return this;
+        }
+
+        public WidgetAnimation From(int from)
+        {
+            FromIndex = from;
+            UpdateElapsePerFrame();
+            return this;
+        }
+
+        public WidgetAnimation Count(int value)
+        {
+            CountIndex = value;
+            ToIndex = FromIndex + value;
+            UpdateElapsePerFrame();
+            return this;
+        }
+
+        public WidgetAnimation To(int to)
+        {
+            CountIndex = ToIndex - FromIndex;
+            ToIndex = to;
+            UpdateElapsePerFrame();
+            return this;
+        }
+
+        public WidgetAnimation Elapse(TimeSpan elapse)
+        {
+            ElapseSpan = elapse;
+            UpdateElapsePerFrame();
+            return this;
+        }
+
+        public WidgetAnimation WithCallback(Action<MirWidget, int> callback)
+        {
+            Callback = callback;
+            return this;
+        }
+
+        public WidgetAnimation WithLoop()
+        {
+            Loop = true;
+            return this;
+        }
+
+        public WidgetAnimation OnEnd(Action<MirWidget> endCallback)
+        {
+            EndCallback = endCallback;
+            return this;
+        }
+
+        public WidgetAnimation WithoutLoop()
+        {
+            Loop = false;
+            return this;
+        }
+
 
         public void Update()
         {
@@ -43,21 +105,22 @@ namespace Mir.Client.MyraCustom
 
             if (Time.TotalGameTime >= _nextTick)
             {
-                Current++;
+                CurrentIndex++;
 
-                if (Current <= To)
+                if (CurrentIndex <= ToIndex)
                 {
-                    Callback(Self, Current);
+                    Callback?.Invoke(Self, CurrentIndex);
                 }
                 else if (!Loop)
                 {
                     Enabled = false;
+                    EndCallback?.Invoke(Self);
                     return;
                 }
                 else
                 {
                     Reset();
-                    Callback(Self, Current);
+                    Callback?.Invoke(Self, CurrentIndex);
                 }
                 _nextTick = Time.TotalGameTime.Add(ElapsePerFrame);
             }
@@ -66,7 +129,19 @@ namespace Mir.Client.MyraCustom
         public void Reset()
         {
             _nextTick = Time.TotalGameTime.Add(ElapsePerFrame);
-            Current = From;
+            CurrentIndex = FromIndex;
+        }
+
+        private void UpdateElapsePerFrame()
+        {
+            var a = ToIndex - FromIndex;
+            if (a == 0) return;
+            ElapsePerFrame = TimeSpan.FromTicks(ElapseSpan.Ticks / a);
+        }
+
+        public static WidgetAnimation Create()
+        {
+            return new WidgetAnimation();
         }
     }
 }

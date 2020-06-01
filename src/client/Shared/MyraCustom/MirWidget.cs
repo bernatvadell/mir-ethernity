@@ -13,8 +13,27 @@ namespace Mir.Client.MyraCustom
 
         public MirWidget WithAnimation(Action<MirWidget, int> callback, int from, int to, TimeSpan elapse, bool loop = false)
         {
-            _animations.Add(new WidgetAnimation(callback, this, from, to, elapse, loop));
-            callback(this, from); // force first call for set initial value
+            var animation = WidgetAnimation.Create()
+                .WithCallback(callback)
+                .From(from)
+                .To(to)
+                .Elapse(elapse)
+                .Attach(this);
+
+            if (loop)
+                animation.WithLoop();
+            else
+                animation.WithoutLoop();
+
+            _animations.Add(animation);
+
+            return this;
+        }
+
+        public MirWidget WithAnimation(WidgetAnimation animation)
+        {
+            _animations.Add(animation);
+            animation.Attach(this);
             return this;
         }
 
@@ -27,9 +46,16 @@ namespace Mir.Client.MyraCustom
         public override void InternalRender(RenderContext context)
         {
             for (var i = 0; i < _animations.Count; i++)
+            {
                 _animations[i].Update();
+                if (!_animations[i].Enabled)
+                {
+                    _animations.RemoveAt(i);
+                    i--;
+                }
+            }
 
-            base.InternalRender(context);
+           // base.InternalRender(context);
         }
     }
 }

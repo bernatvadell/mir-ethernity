@@ -41,7 +41,12 @@ namespace Mir.Client.Scenes.Characters
                 Library = LibraryType.Interface1c,
                 UseOffset = true,
                 Blend = true
-            }.WithAnimation((s, e) => ((MirImage)s).Index = e, 2800, 2816, TimeSpan.FromSeconds(2), true));
+            }.WithAnimation(WidgetAnimation.Create()
+                .WithCallback((s, e) => ((MirImage)s).Index = e)
+                .From(2800).To(2816)
+                .Elapse(TimeSpan.FromSeconds(2))
+                .WithLoop()
+            ));
 
             Widgets.Add(new MirImage
             {
@@ -51,16 +56,57 @@ namespace Mir.Client.Scenes.Characters
                 Blend = true,
                 Left = 20,
                 Top = 25
-            }.WithAnimation((s, e) => ((MirImage)s).Index = e, 2900, 2916, TimeSpan.FromSeconds(2), true));
+            }.WithAnimation(WidgetAnimation.Create()
+                .WithCallback((s, e) => ((MirImage)s).Index = e)
+                .From(2900).Count(16)
+                .Elapse(TimeSpan.FromSeconds(2))
+                .WithLoop()
+            ));
 
-            Widgets.Add(new MirImage()
+
+            var player = new MirImage()
             {
                 Top = 100,
                 Left = 100,
                 Library = LibraryType.Interface1c,
                 Index = 200,
                 UseOffset = true,
-            }.WithAnimation((c, i) => ((MirImage)c).Index = i, 200, 212, TimeSpan.FromSeconds(2), true));
+            };
+
+            Widgets.Add(player);
+
+            var playerEffect = new MirImage()
+            {
+                Top = 100,
+                Left = 100,
+                Library = LibraryType.Interface1c,
+                Index = 200,
+                UseOffset = true,
+                Blend = true
+            };
+
+            Widgets.Add(playerEffect);
+
+            player.WithAnimation(WidgetAnimation.Create()
+                .WithCallback((s, e) =>
+                {
+                    player.Index = e;
+                    playerEffect.Index = e + 100;
+                })
+                .From(240).Count(21)
+                .Elapse(TimeSpan.FromSeconds(2))
+                .OnEnd((c) =>
+                {
+                    playerEffect.Enabled = false;
+
+                    player.WithAnimation(WidgetAnimation.Create()
+                        .WithCallback((s, e) => ((MirImage)s).Index = e)
+                        .From(300).Count(12)
+                        .Elapse(TimeSpan.FromSeconds(2))
+                        .WithLoop());
+
+                })
+            );
 
             //_characters = new CharacterSelectControl[4];
 
