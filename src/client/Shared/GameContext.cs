@@ -3,6 +3,7 @@ using Mir.Client.Exceptions;
 using Mir.Client.Models;
 using Mir.Client.MyraCustom;
 using Mir.Client.Scenes;
+using Mir.Client.Scenes.Characters;
 using Mir.Client.Scenes.Splash;
 using Mir.Client.Services;
 using Myra;
@@ -53,8 +54,8 @@ namespace Mir.Client
 			Desktop.HasExternalTextInput = true;
 			Fonts.Load(Content);
 			DrawerManager.Load();
-			SceneManager.Load(new SplashScene(), throwException: false);
-
+			// SceneManager.Load(new SplashScene(), throwException: false);
+			SceneManager.Load(new CharacterScene(), throwException: false);
 			base.LoadContent();
 		}
 

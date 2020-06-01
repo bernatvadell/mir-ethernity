@@ -18,6 +18,12 @@ namespace Mir.Client.MyraCustom
             return this;
         }
 
+        public MirWidget ClearAnimations()
+        {
+            _animations.Clear();
+            return this;
+        }
+
         public override void InternalRender(RenderContext context)
         {
             for (var i = 0; i < _animations.Count; i++)

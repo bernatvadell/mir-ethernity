@@ -32,6 +32,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Primitive2D.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\BaseScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Characters\CharacterScene.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Scenes\Characters\CharacterSelectControl.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Login\LoginBox.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Login\LoginScene.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Scenes\Splash\SplashScene.cs" />
